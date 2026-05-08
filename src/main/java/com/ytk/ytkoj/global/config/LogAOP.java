@@ -3,10 +3,7 @@ package com.ytk.ytkoj.global.config;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
@@ -32,6 +29,14 @@ public class LogAOP {
         long executeTime = endTime - startTime;
         log.info("Executed ({}) in {} ms", joinPoint.getSignature().getDeclaringTypeName(), executeTime);
         return proceed;
+    }
+
+    @AfterThrowing(
+            pointcut = "servicePointcut()",
+            throwing = "exception"
+    )
+    public void printAllThrowing(JoinPoint joinPoint, Exception exception) {
+        log.error("EXCEPTION METHOD: {} EX: {}", joinPoint.toString(), exception.toString());
     }
 
 
