@@ -2,6 +2,7 @@ package com.ytk.ytkoj.domain.submission.entity;
 
 import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.usr.entity.User;
+import com.ytk.ytkoj.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Submission {
+public class Submission extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;

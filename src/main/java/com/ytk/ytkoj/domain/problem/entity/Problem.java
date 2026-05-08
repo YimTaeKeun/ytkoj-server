@@ -1,5 +1,6 @@
 package com.ytk.ytkoj.domain.problem.entity;
 
+import com.ytk.ytkoj.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-public class Problem {
+public class Problem extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
