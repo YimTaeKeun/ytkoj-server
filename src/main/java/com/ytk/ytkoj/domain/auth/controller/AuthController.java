@@ -22,4 +22,9 @@ public class AuthController {
         AuthDTOs.TokenResponse tokenResponse = authService.loginRegister(request);
         return ResponseEntity.ok(tokenResponse);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(){
+        return ResponseEntity.noContent().build();
+    }
 }
