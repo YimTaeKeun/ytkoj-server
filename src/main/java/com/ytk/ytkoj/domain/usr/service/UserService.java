@@ -28,6 +28,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User authenticateUser(){
+        // TODO: 로그인된 사용자를 반환해야합니다. 코드 교체 필요
+        return new User("test", "kakaoWeb", "testId");
+    }
+
 
     /**
      * 자체 서비스 로그인을 할 때 해당 함수를 사용합니다.
