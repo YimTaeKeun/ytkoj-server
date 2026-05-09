@@ -24,6 +24,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String registerService; // 가입된 서비스
 
+    @Column(unique = true)
+    private String handle; // 서비스에서 사용하는 고유 닉네임
+
     @Column
     private String serviceUniqueId; // 가입된 서비스에서 나온 사용자 고유 아이디
 
@@ -31,14 +34,15 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String userUuid; // 회원을 찾기 위한 유저 아이디
 
-    public User(String username, String userUuid, String registerService, String serviceUniqueId) {
+    public User(String username, String handle, String userUuid, String registerService, String serviceUniqueId) {
         this.username = username;
         this.userUuid = userUuid;
+        this.handle = handle;
         this.registerService = registerService;
         this.serviceUniqueId = serviceUniqueId;
     }
 
-    public User(String username, String registerService, String serviceUniqueId) {
-        this(username, UUID.randomUUID().toString(), registerService, serviceUniqueId);
+    public User(String username, String handle, String registerService, String serviceUniqueId) {
+        this(username, handle, UUID.randomUUID().toString(), registerService, serviceUniqueId);
     }
 }
