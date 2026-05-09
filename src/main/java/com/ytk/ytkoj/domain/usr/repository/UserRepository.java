@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserUuid(String userUuid);
 //    소셜 로그인 아이디로 사용자를 찾습니다.
     Optional<User> findByServiceUniqueId(String serviceUniqueId);
+
+    Optional<User> findByHandle(String handle);
 }

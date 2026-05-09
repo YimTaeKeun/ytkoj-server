@@ -29,10 +29,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    /**
+     * JWT 토큰 정보를 바탕으로 현재 로그인 된 사용자를 반환합니다.
+     * */
     @Transactional
     public User authenticateUser(){
         // TODO: 로그인된 사용자를 반환해야합니다. 코드 교체 필요
-        User user = new User("test", "testUser", "kakaoWeb", "testId");
+        User user = userRepository.findByHandle("testUser").orElse(new User("test", "testUser", "kakaoWeb", "testId"));
         return userRepository.save(user);
     }
 

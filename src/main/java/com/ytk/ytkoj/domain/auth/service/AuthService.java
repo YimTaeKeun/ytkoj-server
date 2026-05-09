@@ -4,6 +4,7 @@ import com.ytk.ytkoj.domain.auth.dto.AuthDTOs;
 import com.ytk.ytkoj.domain.auth.dto.SocialUserInfoDTO;
 import com.ytk.ytkoj.domain.usr.entity.User;
 import com.ytk.ytkoj.domain.usr.service.UserService;
+import com.ytk.ytkoj.global.token.TokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 public class AuthService {
     private final Map<String, SocialLoginRegister> socialService;
     private final UserService userService;
+    private final TokenManager tokenManager;
 
 
     /**
@@ -33,9 +35,11 @@ public class AuthService {
                 () -> register(socialUserInfo, request.service())
         );
         // 유저 정보를 바탕으로 JWT 토큰을 반환합니다.
+        String[] tokens = tokenManager.generateTokens(user);
+        String accessToken = tokens[0], refreshToken = tokens[1];
         return new AuthDTOs.TokenResponse(
-                "None",
-                "None"
+                accessToken,
+                refreshToken
         );
     }
 
