@@ -10,6 +10,9 @@ import com.ytk.ytkoj.domain.usr.service.UserService;
 import com.ytk.ytkoj.global.exception.InternalServerException;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,11 @@ public class SubmissionService {
     private final CeleryTaskManager celeryTaskManager; // 셀러리 작업 전달자
     private final ProblemRepository problemRepository;
     private final UserService userService;
+
+    public Page<Submission> getSubmission(int page){
+        Pageable pageReq = PageRequest.ofSize(10).withPage(page - 1);
+        return submissionRepository.findAll(pageReq);
+    }
 
     public void gradingCode(
             Long problemId, // 문제 번호

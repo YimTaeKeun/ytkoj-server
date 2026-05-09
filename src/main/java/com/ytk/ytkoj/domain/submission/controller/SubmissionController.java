@@ -1,9 +1,13 @@
 package com.ytk.ytkoj.domain.submission.controller;
 
 import com.ytk.ytkoj.domain.submission.dto.RequestDTOs;
+import com.ytk.ytkoj.domain.submission.dto.ResponseDTOs;
+import com.ytk.ytkoj.domain.submission.dto.SubmissionMapper;
+import com.ytk.ytkoj.domain.submission.entity.Submission;
 import com.ytk.ytkoj.domain.submission.service.SubmissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SubmissionController {
     private final SubmissionService submissionService;
+    private final SubmissionMapper submissionMapper;
 
 
     @PostMapping("")
@@ -27,9 +32,11 @@ public class SubmissionController {
     @GetMapping("")
     public ResponseEntity<?> getSubmissions(
             @RequestParam(required = false) String username,
-            @RequestParam(required = false) String problemId
+            @RequestParam(required = false) String problemId,
+            @RequestParam(required = false, defaultValue = "1") Integer page
     ){
-        return ResponseEntity.noContent().build();
+        Page<ResponseDTOs.SubmissionResponse> submission = submissionService.getSubmission(page).map(submissionMapper::toSubmissionResponse);
+        return ResponseEntity.ok(submission);
     }
 
     @Operation(
