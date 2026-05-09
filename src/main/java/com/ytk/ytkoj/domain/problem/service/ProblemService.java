@@ -1,10 +1,10 @@
 package com.ytk.ytkoj.domain.problem.service;
 
 import com.ytk.ytkoj.domain.problem.dto.GeneratedProblemDTO;
-import com.ytk.ytkoj.domain.problem.dto.RequestDTOs;
 import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.problem.entity.ProblemStatus;
 import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
+import com.ytk.ytkoj.global.exception.NoResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +22,12 @@ public class ProblemService {
     public void saveGeneratedProblem(GeneratedProblemDTO request){
         Problem problem = getEntity(request);
         problemRepository.save(problem);
+    }
+
+    public Problem getProblem(Long problemNumber){
+        return problemRepository.findByProblemNumber(problemNumber).orElseThrow(
+                () -> new NoResourceException("문제 정보가 존재하지 않습니다.")
+        );
     }
 
     private Problem getEntity(GeneratedProblemDTO request){

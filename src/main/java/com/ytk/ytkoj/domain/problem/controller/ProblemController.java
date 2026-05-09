@@ -1,7 +1,10 @@
 package com.ytk.ytkoj.domain.problem.controller;
 
 import com.ytk.ytkoj.domain.problem.dto.GeneratedProblemDTO;
+import com.ytk.ytkoj.domain.problem.dto.ProblemMapper;
 import com.ytk.ytkoj.domain.problem.dto.RequestDTOs;
+import com.ytk.ytkoj.domain.problem.dto.ResponseDTOs;
+import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.problem.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProblemController {
 
     private final ProblemService problemService;
+    private final ProblemMapper problemMapper; // DTO <-> Entity 변환
 
     @GetMapping("")
     public ResponseEntity<?> getProblems(
@@ -25,9 +29,11 @@ public class ProblemController {
 
     @GetMapping("/{problemId}")
     public ResponseEntity<?> getProblemDetail(
-            @PathVariable String problemId
+            @PathVariable Long problemId
     ){
-        return ResponseEntity.noContent().build();
+        Problem problem = problemService.getProblem(problemId);
+        ResponseDTOs.ProblemDetailResponse detail = problemMapper.toProblemDetailResponse(problem);
+        return ResponseEntity.ok(detail);
     }
 
     @Operation(
