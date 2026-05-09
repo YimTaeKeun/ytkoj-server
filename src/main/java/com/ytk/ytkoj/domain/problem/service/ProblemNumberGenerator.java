@@ -14,7 +14,7 @@ public class ProblemNumberGenerator {
 
     @Transactional
     public Long getNextProblemNumber(){
-        ProblemNumberSequence seq = repo.findById("SEQ").orElseThrow(() -> new RuntimeException("에러"));
+        ProblemNumberSequence seq = repo.findById("SEQ").orElse(new ProblemNumberSequence("SEQ", 999L));
         Long nextNumber = seq.getSequence() + 1;
         seq.setSequence(nextNumber);
         ProblemNumberSequence save = repo.save(seq);

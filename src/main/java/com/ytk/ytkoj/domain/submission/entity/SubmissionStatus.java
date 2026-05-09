@@ -6,5 +6,6 @@ public enum SubmissionStatus {
     WRONG, // 틀림
     RUNTIME_ERROR, // 런타임 에러
     TIME_LIMIT_EXCEEDED, // 시간 초과
-    MEMORY_LIMIT_EXCEEDED // 메모리 초과
+    MEMORY_LIMIT_EXCEEDED, // 메모리 초과
+    SERVER_ERROR // 서버에서 처리하지 못함
 }

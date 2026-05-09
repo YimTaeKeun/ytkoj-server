@@ -29,7 +29,7 @@ public class SubmissionService {
             String sourceCode // 작성된 코드
     ){
         // DB로부터 문제 정보를 가져옵니다.
-        Problem problem = problemRepository.findById(problemId).orElseThrow(
+        Problem problem = problemRepository.findByProblemNumber(problemId).orElseThrow(
                 () -> new NoResourceException("문제 정보가 없습니다.")
         );
         // 로그인 된 유저를 가져옵니다.

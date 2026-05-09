@@ -3,6 +3,7 @@ package com.ytk.ytkoj.domain.problem.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -10,10 +11,16 @@ import lombok.Setter;
  * */
 @Entity
 @Getter
+@NoArgsConstructor
 public class ProblemNumberSequence {
     @Id
     private String id = "SEQ";
 
     @Setter
     private Long sequence = 999L; // 문제는 1000번 부터 시작
+
+    public ProblemNumberSequence(String id, Long sequence) {
+        this.id = id;
+        this.sequence = sequence;
+    }
 }

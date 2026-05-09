@@ -5,6 +5,7 @@ import com.ytk.ytkoj.domain.usr.repository.UserRepository;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -28,9 +29,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public User authenticateUser(){
         // TODO: 로그인된 사용자를 반환해야합니다. 코드 교체 필요
-        return new User("test", "kakaoWeb", "testId");
+        User user = new User("test", "kakaoWeb", "testId");
+        return userRepository.save(user);
     }
 
 
