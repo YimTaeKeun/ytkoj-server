@@ -6,6 +6,8 @@ import com.ytk.ytkoj.domain.problem.entity.ProblemStatus;
 import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +26,18 @@ public class ProblemService {
         problemRepository.save(problem);
     }
 
+
+
     public Problem getProblem(Long problemNumber){
         return problemRepository.findByProblemNumber(problemNumber).orElseThrow(
                 () -> new NoResourceException("문제 정보가 존재하지 않습니다.")
         );
+    }
+
+    public Page<Problem> getProblem(int page){
+        // 사용자 입장에서는 페이지를 1번부터 받도록 합니다.
+        Pageable pageable = Pageable.ofSize(10).withPage(page - 1);
+        return problemRepository.findAllByOrderByProblemNumberAsc(pageable);
     }
 
     private Problem getEntity(GeneratedProblemDTO request){

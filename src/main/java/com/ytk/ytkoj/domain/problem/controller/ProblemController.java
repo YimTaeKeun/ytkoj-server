@@ -8,8 +8,11 @@ import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.problem.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/problems")
@@ -21,10 +24,10 @@ public class ProblemController {
 
     @GetMapping("")
     public ResponseEntity<?> getProblems(
-            @RequestParam(required = false) String problemId,
-            @RequestParam(required = false) String page
+            @RequestParam(required = false, defaultValue = "1") Integer page
     ){
-        return ResponseEntity.noContent().build();
+        Page<ResponseDTOs.ProblemBriefResponse> problemBriefResponseStream = problemService.getProblem(page).map(problemMapper::toProblemBriefResponse);
+        return ResponseEntity.ok(problemBriefResponseStream);
     }
 
     @GetMapping("/{problemId}")
