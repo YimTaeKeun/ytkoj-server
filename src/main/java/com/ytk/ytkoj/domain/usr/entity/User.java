@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String registerService; // 가입된 서비스
 
+    @Setter
     @Column(unique = true)
     private String handle; // 서비스에서 사용하는 고유 닉네임
 

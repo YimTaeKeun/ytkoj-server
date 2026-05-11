@@ -2,8 +2,13 @@ package com.ytk.ytkoj.domain.usr.service;
 
 import com.ytk.ytkoj.domain.usr.entity.User;
 import com.ytk.ytkoj.domain.usr.repository.UserRepository;
+import com.ytk.ytkoj.global.authentication.CustomUserDetails;
+import com.ytk.ytkoj.global.exception.BadRequestException;
 import com.ytk.ytkoj.global.exception.NoResourceException;
+import com.ytk.ytkoj.global.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,9 +39,12 @@ public class UserService {
      * */
     @Transactional
     public User authenticateUser(){
-        // TODO: 로그인된 사용자를 반환해야합니다. 코드 교체 필요
-        User user = userRepository.findByHandle("testUser").orElse(new User("test", "testUser", "kakaoWeb", "testId"));
-        return userRepository.save(user);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null
+                || authentication.getPrincipal() == null
+                || !(authentication.getPrincipal() instanceof CustomUserDetails)) throw new UnAuthorizedException("Authentication Required");
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userRepository.findByUserUuid(userDetails.getUserUuid()).orElseThrow(() -> new UnAuthorizedException("Authentication Required"));
     }
 
 
@@ -65,5 +73,20 @@ public class UserService {
      * */
     public Optional<User> findByServiceUniqueId(String serviceUniqueId){
         return userRepository.findByServiceUniqueId(serviceUniqueId);
+    }
+
+    public Optional<User> findByHandle(String handle){
+        return userRepository.findByHandle(handle);
+    }
+
+    /*
+    UPDATE
+    * */
+
+    @Transactional
+    public User updateUserHandle(String handle){
+        User user = authenticateUser();
+        user.setHandle(handle);
+        return userRepository.save(user);
     }
 }

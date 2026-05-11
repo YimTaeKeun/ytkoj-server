@@ -11,4 +11,13 @@ public class AuthDTOs {
             String accessToken,
             String refreshToken
     ){}
+
+    public record LogoutRequest(
+            String accessToken,
+            String refreshToken
+    ){}
+
+    public record RefreshRequest(
+            String refreshToken
+    ){}
 }

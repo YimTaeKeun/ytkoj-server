@@ -2,12 +2,16 @@ package com.ytk.ytkoj.global.token;
 
 import com.ytk.ytkoj.domain.usr.entity.User;
 import com.ytk.ytkoj.global.config.JwtConfig;
+import com.ytk.ytkoj.global.exception.UnAuthorizedException;
 import com.ytk.ytkoj.global.jwt.JwtManager;
+import com.ytk.ytkoj.global.token.blacklist.BlackListToken;
+import com.ytk.ytkoj.global.token.blacklist.BlackListTokenRepository;
 import com.ytk.ytkoj.global.token.refresh.RefreshToken;
 import com.ytk.ytkoj.global.token.refresh.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +23,14 @@ import java.util.UUID;
  * JWT 토큰의 body에는 다음과 같은 정보가 포함됩니다.
  * 유저 UUID, 유저 이름
  * */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenManager {
     private final JwtManager jwtManager;
     private final JwtConfig jwtConfig;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final BlackListTokenRepository blackListTokenRepository;
 
     /**
      * 값으로 반환되는 첫 번째 필드가 액세스 토큰, 두 번째 필드가 리프레시 토큰입니다.
@@ -42,6 +48,45 @@ public class TokenManager {
         return jwtManager.generateJwt(claims);
 
     }
+
+    /**
+     * 1. 기본 JWT 서명 검증
+     * </br>
+     * 2. 유저 handle 검증
+     * </br>
+     * 3. 블랙리스트 토큰이 아닌지 검증
+     * */
+    public Claims validateToken(String token, TokenType type){
+        // 토큰 유효성 검증
+        Claims claims = jwtManager.verifyJwt(token);
+
+        // 추가 토큰 페이로드 검증
+        // handle 검증 제거
+//        checkAdditionalPayload(claims);
+
+        // 블랙리스트 토큰인지 체크
+        String jti = claims.getId();
+        if(jti == null) throw new UnAuthorizedException("INVALID");
+
+        checkBlackListToken(jti);
+        if(type == TokenType.REFRESH){
+            refreshTokenRepository.findByJti(jti)
+                    .orElseThrow(() -> new UnAuthorizedException("INVALID"));
+        }
+        return claims;
+    }
+
+    private void checkBlackListToken(String jti){
+        BlackListToken blackListToken = blackListTokenRepository.findByJti(jti).orElse(null);
+        if(blackListToken != null) throw new UnAuthorizedException("INVALID");
+    }
+
+//    private void checkAdditionalPayload(Claims claims){
+//        // 유저 handle 검증
+//        Object handle = claims.get("handle");
+//        if(handle == null) throw new UnAuthorizedException("NO_HANDLE_USER");
+//        log.info("handle: {}", handle);
+//    }
 
     @Transactional
     public String generateRefreshToken(User user){

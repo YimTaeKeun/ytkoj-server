@@ -7,6 +7,7 @@ import com.ytk.ytkoj.domain.problem.dto.ResponseDTOs;
 import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.problem.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ public class ProblemController {
     private final ProblemService problemService;
     private final ProblemMapper problemMapper; // DTO <-> Entity 변환
 
+    @SecurityRequirements
     @GetMapping("")
     public ResponseEntity<?> getProblems(
             @RequestParam(required = false, defaultValue = "1") Integer page
@@ -30,6 +32,7 @@ public class ProblemController {
         return ResponseEntity.ok(problemBriefResponseStream);
     }
 
+    @SecurityRequirements
     @GetMapping("/{problemId}")
     public ResponseEntity<?> getProblemDetail(
             @PathVariable Long problemId
@@ -39,6 +42,7 @@ public class ProblemController {
         return ResponseEntity.ok(detail);
     }
 
+    @SecurityRequirements
     @Operation(
             summary = "생성된 문제 저장",
             description = "셀러리에서 생성된 문제 정보를 받아서 저장합니다."

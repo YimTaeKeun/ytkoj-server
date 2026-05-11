@@ -6,6 +6,7 @@ import com.ytk.ytkoj.domain.submission.dto.SubmissionMapper;
 import com.ytk.ytkoj.domain.submission.entity.Submission;
 import com.ytk.ytkoj.domain.submission.service.SubmissionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ public class SubmissionController {
         return ResponseEntity.ok().build();
     }
 
+    @SecurityRequirements
     @GetMapping("")
     public ResponseEntity<?> getSubmissions(
             @RequestParam(required = false) String username,
@@ -39,6 +41,7 @@ public class SubmissionController {
         return ResponseEntity.ok(submission);
     }
 
+    @SecurityRequirements
     @Operation(
             summary = "채점 결과 회부",
             description = "셀러리에서 채점한 결과를 다시 받아내는 오퍼레이션입니다."

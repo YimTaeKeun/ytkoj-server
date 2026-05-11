@@ -3,8 +3,14 @@ package com.ytk.ytkoj.domain.auth.service;
 import com.ytk.ytkoj.domain.auth.dto.AuthDTOs;
 import com.ytk.ytkoj.domain.auth.dto.SocialUserInfoDTO;
 import com.ytk.ytkoj.domain.usr.entity.User;
+import com.ytk.ytkoj.domain.usr.repository.UserRepository;
 import com.ytk.ytkoj.domain.usr.service.UserService;
+import com.ytk.ytkoj.global.exception.NoResourceException;
 import com.ytk.ytkoj.global.token.TokenManager;
+import com.ytk.ytkoj.global.token.TokenType;
+import com.ytk.ytkoj.global.token.blacklist.BlackListToken;
+import com.ytk.ytkoj.global.token.blacklist.BlackListTokenRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +25,9 @@ import java.util.Map;
 public class AuthService {
     private final Map<String, SocialLoginRegister> socialService;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final TokenManager tokenManager;
+    private final BlackListTokenRepository blackListTokenRepository;
 
 
     /**
@@ -50,6 +58,28 @@ public class AuthService {
                 service,
                 socialUserInfo.getServiceUniqueId()
         );
+    }
+
+    public void logout(String accessToken, String refreshToken){
+        // 토큰들을 모두 블랙리스트에 저장시킵니다.
+        Claims accessTokenClaims = tokenManager.validateToken(accessToken, TokenType.ACCESS);
+        Claims refreshTokenClaims = tokenManager.validateToken(refreshToken, TokenType.REFRESH);
+        BlackListToken ac = new BlackListToken(accessTokenClaims.getId());
+        BlackListToken rf = new BlackListToken(refreshTokenClaims.getId());
+        blackListTokenRepository.save(ac);
+        blackListTokenRepository.save(rf);
+    }
+
+    public AuthDTOs.TokenResponse refreshToken(String refreshToken){
+        // refresh 토큰은 새로 발급하지 않고 액세스 토큰만 새로 발급합니다.
+        Claims claims = tokenManager.validateToken(refreshToken, TokenType.REFRESH);
+
+        String handle = claims.get("handle").toString();
+
+        User user = userRepository.findByHandle(handle).orElseThrow(() -> new NoResourceException("유효하지 않은 사용자"));
+
+        String accessToken = tokenManager.generateAccessToken(user);
+        return new AuthDTOs.TokenResponse(accessToken, refreshToken);
     }
 
     public SocialLoginRegister getSocialService(String service){
