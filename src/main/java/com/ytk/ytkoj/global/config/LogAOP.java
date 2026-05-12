@@ -15,8 +15,8 @@ public class LogAOP {
 
     @Before("servicePointcut()")
     public void serviceLogging(JoinPoint joinPoint){
-        log.debug("Executed Service Class: {}", joinPoint.getSignature().getDeclaringTypeName());
-        log.debug("Executed Service Method: {}, Args: {}", joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
+        log.info("Executed Service Class: {}", joinPoint.getSignature().getDeclaringTypeName());
+        log.info("Executed Service Method: {}, Args: {}", joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
     }
 
     @Around("servicePointcut()")
@@ -27,7 +27,7 @@ public class LogAOP {
         // 실행 종료
         long endTime = System.currentTimeMillis();
         long executeTime = endTime - startTime;
-        log.info("Executed ({}) in {} ms", joinPoint.getSignature().getDeclaringTypeName(), executeTime);
+        log.debug("Executed ({}) in {} ms", joinPoint.getSignature().getDeclaringTypeName(), executeTime);
         return proceed;
     }
 
