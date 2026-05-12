@@ -28,4 +28,24 @@ public class WebConfig {
                 .baseUrl("https://kapi.kakao.com")
                 .build();
     }
+
+    /**
+     * 네이버 로그인/토큰 발급 시에 사용
+     * */
+    @Bean
+    public WebClient naverAuthWebClient(){
+        return WebClient.builder()
+                .baseUrl("https://nid.naver.com")
+                .build();
+    }
+
+    /**
+     * 회원 정보 조회시 사용
+     * */
+    @Bean
+    public WebClient naverApiClient(){
+        return WebClient.builder()
+                .baseUrl("https://openapi.naver.com")
+                .build();
+    }
 }
