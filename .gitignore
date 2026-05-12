@@ -39,3 +39,5 @@ out/
 
 # .env 제거
 .env
+
+Dockerfile

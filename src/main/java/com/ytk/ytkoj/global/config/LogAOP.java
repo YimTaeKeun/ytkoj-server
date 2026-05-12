@@ -41,7 +41,7 @@ public class LogAOP {
 
 
 
-    @Pointcut("@annotation(org.springframework.stereotype.Service)")
+    @Pointcut("execution(* com.ytk.ytkoj.domain.*.service.*.*(..))")
     public void servicePointcut() {}
 
 }
