@@ -7,6 +7,7 @@ import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
 import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
 import com.ytk.ytkoj.domain.usr.entity.User;
 import com.ytk.ytkoj.domain.usr.service.UserService;
+import com.ytk.ytkoj.global.config.aop.UserHandlerCheck;
 import com.ytk.ytkoj.global.exception.InternalServerException;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,8 @@ public class SubmissionService {
         return submissionRepository.findAll(pageReq);
     }
 
+    // 핸들러 있는 유저만 제출 가능
+    @UserHandlerCheck
     public void gradingCode(
             Long problemId, // 문제 번호
             String lang, // 작성 언어

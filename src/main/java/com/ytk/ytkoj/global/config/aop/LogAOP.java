@@ -1,4 +1,4 @@
-package com.ytk.ytkoj.global.config;
+package com.ytk.ytkoj.global.config.aop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
