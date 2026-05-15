@@ -27,8 +27,10 @@ public class SubmissionService {
     private final ProblemRepository problemRepository;
     private final UserService userService;
 
-    public Page<Submission> getSubmission(int page){
+
+    public Page<Submission> getSubmission(int page, String handle){
         Pageable pageReq = PageRequest.ofSize(10).withPage(page - 1);
+        if(handle != null) return submissionRepository.findAllByUser_Handle(handle, pageReq);
         return submissionRepository.findAll(pageReq);
     }
 

@@ -26,9 +26,10 @@ public class ProblemController {
     @SecurityRequirements
     @GetMapping("")
     public ResponseEntity<?> getProblems(
+            @RequestParam(required = false) String problemName,
             @RequestParam(required = false, defaultValue = "1") Integer page
     ){
-        Page<ResponseDTOs.ProblemBriefResponse> problemBriefResponseStream = problemService.getProblem(page).map(problemMapper::toProblemBriefResponse);
+        Page<ResponseDTOs.ProblemBriefResponse> problemBriefResponseStream = problemService.getProblem(page, problemName).map(problemMapper::toProblemBriefResponse);
         return ResponseEntity.ok(problemBriefResponseStream);
     }
 

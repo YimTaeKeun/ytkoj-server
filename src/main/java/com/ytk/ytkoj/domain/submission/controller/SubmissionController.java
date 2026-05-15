@@ -32,12 +32,12 @@ public class SubmissionController {
 
     @SecurityRequirements
     @GetMapping("")
-    public ResponseEntity<?> getSubmissions(
-            @RequestParam(required = false) String username,
+    public ResponseEntity<Page<?>> getSubmissions(
+            @RequestParam(required = false) String handle,
             @RequestParam(required = false) String problemId,
             @RequestParam(required = false, defaultValue = "1") Integer page
     ){
-        Page<ResponseDTOs.SubmissionResponse> submission = submissionService.getSubmission(page).map(submissionMapper::toSubmissionResponse);
+        Page<ResponseDTOs.SubmissionResponse> submission = submissionService.getSubmission(page, handle).map(submissionMapper::toSubmissionResponse);
         return ResponseEntity.ok(submission);
     }
 

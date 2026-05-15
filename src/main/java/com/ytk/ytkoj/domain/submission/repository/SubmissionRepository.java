@@ -12,4 +12,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     Optional<Submission> findBySubmissionId(String submissionId);
 
     Page<Submission> findAll(Pageable pageable);
+
+    Page<Submission> findAllByUser_Handle(String userHandle, Pageable pageable);
 }

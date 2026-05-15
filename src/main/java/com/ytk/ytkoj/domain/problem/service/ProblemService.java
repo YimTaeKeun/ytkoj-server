@@ -34,9 +34,10 @@ public class ProblemService {
         );
     }
 
-    public Page<Problem> getProblem(int page){
+    public Page<Problem> getProblem(int page, String problemName){
         // 사용자 입장에서는 페이지를 1번부터 받도록 합니다.
         Pageable pageable = Pageable.ofSize(10).withPage(page - 1);
+        if(problemName != null) return problemRepository.findAllByTitleContainingIgnoreCaseOrderByProblemNumberAsc(pageable, problemName);
         return problemRepository.findAllByOrderByProblemNumberAsc(pageable);
     }
 
