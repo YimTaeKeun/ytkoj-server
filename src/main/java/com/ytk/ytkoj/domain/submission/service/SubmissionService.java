@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class SubmissionService {
 
 
     public Page<Submission> getSubmission(int page, String handle){
-        Pageable pageReq = PageRequest.ofSize(10).withPage(page - 1);
+        Pageable pageReq = PageRequest.ofSize(10).withPage(page - 1).withSort(Sort.by("createdAt").descending());
         if(handle != null) return submissionRepository.findAllByUser_Handle(handle, pageReq);
         return submissionRepository.findAll(pageReq);
     }
