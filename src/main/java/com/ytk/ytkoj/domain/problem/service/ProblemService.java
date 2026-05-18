@@ -52,7 +52,7 @@ public class ProblemService {
 
     private Problem getEntity(GeneratedProblemDTO request){
         Long problemNumber = problemNumberGenerator.getNextProblemNumber();
-        Problem problem = new Problem(
+        return new Problem(
                 problemNumber,
                 request.getTaskId(),
                 request.getTitle(),
@@ -68,8 +68,6 @@ public class ProblemService {
                 ProblemStatus.PENDING, // 검수중
                 request.getDifficulty()
         );
-
-        return problem;
     }
 
     private void addProblemTag(Problem problem, List<String> tags){
