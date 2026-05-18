@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -49,6 +52,18 @@ public class Problem extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProblemStatus status;
 
+    @Column
+    private Integer difficulty; // 문제 난이도
+
+    @OneToMany(mappedBy = "problem")
+    private List<ProblemTag> problemTags = new ArrayList<>();
+
+
+    public void addProblemTag(ProblemTag problemTag){
+        problemTags.add(problemTag);
+        problemTag.setProblem(this);
+    }
+
     public Problem(
             Long problemNumber,
             String taskId,
@@ -60,7 +75,8 @@ public class Problem extends BaseEntity {
             String etcLimit, String input_ex,
             String output_ex,
             String grading_data_path,
-            ProblemStatus status
+            ProblemStatus status,
+            Integer difficulty
     ) {
         this.problemNumber = problemNumber;
         this.taskId = taskId;
@@ -75,6 +91,7 @@ public class Problem extends BaseEntity {
         this.output_ex = output_ex;
         this.grading_data_path = grading_data_path;
         this.status = status;
+        this.difficulty = difficulty;
     }
 
     public Problem(String grading_data_path, String taskId){
