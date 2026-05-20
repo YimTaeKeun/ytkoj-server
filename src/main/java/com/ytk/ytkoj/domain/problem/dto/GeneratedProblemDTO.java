@@ -3,6 +3,8 @@ package com.ytk.ytkoj.domain.problem.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Builder
 @Getter
 public class GeneratedProblemDTO {
@@ -15,4 +17,6 @@ public class GeneratedProblemDTO {
     private String inputEx;
     private String outputEx;
     private String gradingDataPath;
+    private Integer difficulty;
+    private List<String> tags;
 }
