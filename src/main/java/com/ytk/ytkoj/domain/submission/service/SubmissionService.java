@@ -10,6 +10,7 @@ import com.ytk.ytkoj.domain.usr.service.UserService;
 import com.ytk.ytkoj.global.config.aop.UserHandlerCheck;
 import com.ytk.ytkoj.global.exception.InternalServerException;
 import com.ytk.ytkoj.global.exception.NoResourceException;
+import com.ytk.ytkoj.global.util.StringCompressor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ public class SubmissionService {
     private final CeleryTaskManager celeryTaskManager; // 셀러리 작업 전달자
     private final ProblemRepository problemRepository;
     private final UserService userService;
+    private final StringCompressor stringCompressor;
 
 
     public Page<Submission> getSubmission(int page, String handle){
@@ -49,7 +51,7 @@ public class SubmissionService {
         // 로그인 된 유저를 가져옵니다.
         User user = userService.authenticateUser();
         // 채점 정보 데이터를 생성합니다.
-        Submission submission = saveSubmissions(user, problem, SubmissionStatus.PENDING);
+        Submission submission = saveSubmissions(user, problem, SubmissionStatus.PENDING, sourceCode);
         String submissionId = submission.getSubmissionId();
 
         // 태스크를 전송합니다.
@@ -77,8 +79,9 @@ public class SubmissionService {
         submissionRepository.save(sub);
     }
 
-    public Submission saveSubmissions(User user, Problem problem, SubmissionStatus status){
-        Submission submissions = new Submission(user, problem, status);
+    public Submission saveSubmissions(User user, Problem problem, SubmissionStatus status, String userCode){
+        byte[] compressedCode = stringCompressor.compress(userCode);
+        Submission submissions = new Submission(user, problem, status, compressedCode);
         return submissionRepository.save(submissions);
     }
 }
