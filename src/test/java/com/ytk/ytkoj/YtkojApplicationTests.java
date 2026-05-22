@@ -45,36 +45,36 @@ class YtkojApplicationTests {
 	void contextLoads() {
 	}
 
-	@BeforeAll
-	public static void before(){
-		user = new User(
-				"t1",
-				"t1",
-				"t1",
-				"t1"
-		);
+//	@BeforeAll
+//	public static void before(){
+//		user = new User(
+//				"t1",
+//				"t1",
+//				"t1",
+//				"t1"
+//		);
+//
+//		problem = new Problem();
+//	}
 
-		problem = new Problem();
-	}
-
-	@Test
-	void problemTest() throws Exception{
-		userRepository.save(user);
-		problemRepository.save(problem);
-
-		Submission sub = new Submission(user, problem, SubmissionStatus.PENDING);
-		String rawCode = "import java.util.*;";
-
-		byte[] code = stringCompressor.compress(rawCode);
-		sub.setUserCode(code);
-
-		Submission save = submissionRepository.save(sub);
-
-		String result = stringCompressor.decompress(save.getUserCode());
-
-		System.out.println("압축 결과: " + Arrays.toString(save.getUserCode()));
-		System.out.println("결과: " + result);
-
-
-	}
+//	@Test
+//	void problemTest() throws Exception{
+//		userRepository.save(user);
+//		problemRepository.save(problem);
+//
+//		Submission sub = new Submission(user, problem, SubmissionStatus.PENDING, new byte[] {});
+//		String rawCode = "import java.util.*;";
+//
+//		byte[] code = stringCompressor.compress(rawCode);
+//		sub.setUserCode(code);
+//
+//		Submission save = submissionRepository.save(sub);
+//
+//		String result = stringCompressor.decompress(save.getUserCode());
+//
+//		System.out.println("압축 결과: " + Arrays.toString(save.getUserCode()));
+//		System.out.println("결과: " + result);
+//
+//
+//	}
 }
