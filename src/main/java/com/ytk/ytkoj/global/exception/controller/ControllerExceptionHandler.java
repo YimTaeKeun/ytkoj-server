@@ -4,6 +4,7 @@ import com.ytk.ytkoj.global.exception.CustomExpectedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -18,6 +19,15 @@ public class ControllerExceptionHandler {
     public ResponseEntity<ExceptionDTO> handleCustomExpectedException(CustomExpectedException e){
         ExceptionDTO dto = buildDto(e);
         return ResponseEntity.status(e.getHttpStatus()).body(dto);
+    }
+
+    /**
+     * 유저를 찾을 수 없을 때
+     * */
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ExceptionDTO> handleUsernameNotFound(UsernameNotFoundException e){
+        ExceptionDTO dto = buildDto(e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dto);
     }
 
     /**
