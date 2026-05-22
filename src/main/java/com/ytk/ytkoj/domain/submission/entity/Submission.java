@@ -38,14 +38,18 @@ public class Submission extends BaseEntity {
 
     private String message;
 
-    public Submission(User user, Problem problem, SubmissionStatus status){
-        this(user, problem, status, UUID.randomUUID().toString());
+    @Lob
+    private byte[] userCode; // 압축된 유저 코드
+
+    public Submission(User user, Problem problem, SubmissionStatus status, byte[] userCode){
+        this(user, problem, status, UUID.randomUUID().toString(), userCode);
     }
 
-    public Submission(User user, Problem problem, SubmissionStatus status, String submissionId){
+    public Submission(User user, Problem problem, SubmissionStatus status, String submissionId, byte[] userCode){
         this.user = user;
         this.status = status;
         this.submissionId = submissionId;
         this.problem = problem;
+        this.userCode = userCode;
     }
 }
