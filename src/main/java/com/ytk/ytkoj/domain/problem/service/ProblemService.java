@@ -60,7 +60,7 @@ public class ProblemService {
         if(rawAsc != null) asc = rawAsc.replace(" ", "").split(",");
         if(rawDesc != null) desc = rawDesc.replace(" ", "").split(",");
 
-        return problemCustomRepository.getProblems(problemName, pageable, asc, desc);
+        return problemCustomRepository.getProblems(pageable, problemName, asc, desc);
     }
 
     private Problem getEntity(GeneratedProblemDTO request){

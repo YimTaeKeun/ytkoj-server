@@ -24,10 +24,10 @@ public class ProblemCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     public Page<Problem> getProblems(
-        String problemName,
-        Pageable pageable,
-        String[] asc,
-        String[] desc
+            Pageable pageable,
+            String problemName,
+            String[] asc,
+            String[] desc
     ){
         JPAQuery<Problem> baseQuery = queryFactory.selectFrom(problem);
         JPAQuery<Long> countQuery = queryFactory.select(problem.count()).from(problem);
