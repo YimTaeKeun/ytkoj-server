@@ -1,6 +1,7 @@
 package com.ytk.ytkoj.domain.problem.service;
 
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.ytk.ytkoj.domain.problem.dto.GeneratedProblemDTO;
 import com.ytk.ytkoj.domain.problem.entity.Problem;
@@ -59,41 +60,7 @@ public class ProblemService {
         if(rawAsc != null) asc = rawAsc.replace(" ", "").split(",");
         if(rawDesc != null) desc = rawDesc.replace(" ", "").split(",");
 
-        return problemCustomRepository.getProblems(problemName, pageable, getOrderSpecifiers(asc, desc));
-    }
-
-    private OrderSpecifier<?>[] getOrderSpecifiers(String[] asc, String[] desc){
-        Map<String, ? extends ComparableExpressionBase<? extends Serializable>> orderList = Map.of(
-                "difficulty", problem.difficulty,
-                "problemName", problem.title,
-                "problemNumber", problem.problemNumber
-        );
-
-        List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
-
-        OrderSpecifier<?> problemNumberOrderSpecifier = problem.problemNumber.asc(); // problemNumber는 항상 마지막 정렬로, 기본은 오름차순
-
-        for(String each: asc){
-            if ("problemNumber".equals(each)) {
-                problemNumberOrderSpecifier = problem.problemNumber.asc();
-                continue;
-            }
-
-            if(orderList.get(each) != null) orderSpecifiers.add(orderList.get(each).asc());
-        }
-
-        for(String each: desc){
-            if ("problemNumber".equals(each)) {
-                problemNumberOrderSpecifier = problem.problemNumber.desc();
-                continue;
-            }
-
-            if(orderList.get(each) != null) orderSpecifiers.add(orderList.get(each).desc());
-        }
-
-        orderSpecifiers.add(problemNumberOrderSpecifier);
-
-        return orderSpecifiers.toArray(new OrderSpecifier[0]);
+        return problemCustomRepository.getProblems(problemName, pageable, asc, desc);
     }
 
     private Problem getEntity(GeneratedProblemDTO request){
