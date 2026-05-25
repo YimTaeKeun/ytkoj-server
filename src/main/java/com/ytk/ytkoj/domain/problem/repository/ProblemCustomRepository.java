@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ytk.ytkoj.domain.problem.entity.Problem;
+import com.ytk.ytkoj.domain.problem.entity.ProblemStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,8 +33,9 @@ public class ProblemCustomRepository {
             String[] asc,
             String[] desc
     ){
-        JPAQuery<Problem> baseQuery = queryFactory.selectFrom(problem);
-        JPAQuery<Long> countQuery = queryFactory.select(problem.count()).from(problem);
+        // REMOVED 상태인 문제는 검색이 되지 않도록 막기
+        JPAQuery<Problem> baseQuery = queryFactory.selectFrom(problem).where(problem.status.ne(ProblemStatus.REMOVED));
+        JPAQuery<Long> countQuery = queryFactory.select(problem.count()).from(problem).where(problem.status.ne(ProblemStatus.REMOVED));
 
         OrderSpecifier<?>[] orderSpecifiers = getOrderSpecifiers(asc, desc);
 
