@@ -54,13 +54,20 @@ public class ProblemService {
     }
 
     // asc=a,b desc=a,b 이렇게
-    public Page<Problem> getProblem(int page, String problemName, String rawAsc, String rawDesc){
-        Pageable pageable = Pageable.ofSize(10).withPage(page - 1);
+    public Page<Problem> getProblem(int page, String problemName, String rawProblemTags, String rawAsc, String rawDesc){
+        Pageable pageable = Pageable.ofSize(12).withPage(page - 1);
         String[] asc = new String[0], desc = new String[0];
-        if(rawAsc != null) asc = rawAsc.replace(" ", "").split(",");
-        if(rawDesc != null) desc = rawDesc.replace(" ", "").split(",");
+        String[] problemTags = new String[0];
+        // 전처리
+        if(rawAsc != null && !rawAsc.isEmpty()) asc = rawAsc.replace(" ", "").split(",");
+        if(rawDesc != null && !rawDesc.isEmpty()) desc = rawDesc.replace(" ", "").split(",");
+        if(rawProblemTags != null && !rawProblemTags.isEmpty()) {
+            problemTags = rawProblemTags.split(",");
+            // 앞 뒤 공백 제거 -> 먼저 공백 제거 하고 배열로 나누지 않는 이유는 태그명 자체에 띄어쓰기가 있을 수 있기 때문
+            for(int i = 0; i < problemTags.length; i++) problemTags[i] = problemTags[i].strip();
+        }
 
-        return problemCustomRepository.getProblems(pageable, problemName, asc, desc);
+        return problemCustomRepository.getProblems(pageable, problemName, problemTags, asc, desc);
     }
 
     private Problem getEntity(GeneratedProblemDTO request){

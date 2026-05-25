@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.ytk.ytkoj.domain.problem.entity.QProblem.problem;
+import static com.ytk.ytkoj.domain.problem.entity.QProblemTag.problemTag;
+import static com.ytk.ytkoj.domain.problem.entity.QTag.tag;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class ProblemCustomRepository {
     public Page<Problem> getProblems(
             Pageable pageable,
             String problemName,
+            String[] problemTags,
             String[] asc,
             String[] desc
     ){
@@ -33,12 +36,34 @@ public class ProblemCustomRepository {
         JPAQuery<Long> countQuery = queryFactory.select(problem.count()).from(problem);
 
         OrderSpecifier<?>[] orderSpecifiers = getOrderSpecifiers(asc, desc);
+
+        // 문제 이름 포함 검색
         if(problemName != null){
             baseQuery = baseQuery
                     .where(problem.title.likeIgnoreCase("%" + problemName + "%"));
             countQuery = countQuery
                     .where(problem.title.likeIgnoreCase("%" + problemName + "%"));
         }
+
+
+        // 문제 태그 검색
+        if(problemTags != null && problemTags.length > 0){
+            List<Long> ids = queryFactory
+                    .select(problemTag.problem.id)
+                    .from(problemTag)
+                    .leftJoin(problemTag.tag, tag)
+                    .where(tag.tagName.in(problemTags))
+                    .fetch();
+
+            baseQuery
+                    .distinct()
+                    .leftJoin(problem.problemTags, problemTag)
+                    // problemTags에 속한 태그 중에 하나라도 있으면 true
+                    .where(problem.id.in(ids));
+            countQuery
+                    .where(problem.id.in(ids));
+        }
+
         baseQuery = baseQuery
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
