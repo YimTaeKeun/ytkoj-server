@@ -36,7 +36,8 @@ public class Submission extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String submissionId;
 
-    private String message;
+    @Lob
+    private byte[] message;
 
     @Lob
     private byte[] userCode; // 압축된 유저 코드

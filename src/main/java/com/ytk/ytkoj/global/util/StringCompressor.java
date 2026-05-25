@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
@@ -45,7 +46,7 @@ public class StringCompressor {
         return bos.toByteArray(); // 하나의 온전한 byte[] 배열로 합쳐 반환
     }
 
-    public String decompress(byte[] compressedByte) throws Exception{
+    public String decompress(byte[] compressedByte){
         Inflater inflater = new Inflater();
         inflater.setInput(compressedByte);
 
@@ -54,14 +55,25 @@ public class StringCompressor {
             byte[] buffer = new byte[1024]; // 1kb 기준
             while(!inflater.finished()){
                 int count = inflater.inflate(buffer);
+                if (count == 0) {
+                    if (inflater.needsInput()) {
+                        throw new InternalServerException("압축 해제에 필요한 입력 데이터가 부족합니다.");
+                    }
+
+                    if (inflater.needsDictionary()) {
+                        throw new InternalServerException("압축 해제에 필요한 dictionary가 없습니다.");
+                    }
+
+                    throw new InternalServerException("압축 해제를 더 이상 진행할 수 없습니다.");
+                }
                 bos.write(buffer, 0, count);
             }
             bos.close();
-        } catch (IOException e){
+        } catch (IOException | DataFormatException e){
             throw new InternalServerException(e.toString());
         }finally {
             inflater.end();
         }
-        return bos.toString();
+        return bos.toString(StandardCharsets.UTF_8);
     }
 }
