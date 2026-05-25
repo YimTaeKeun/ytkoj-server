@@ -12,6 +12,6 @@ public class ResponseDTOs {
             String userHandle,
             SubmissionStatus status,
             String message,
-            LocalDateTime createdAt
+            String createdAt
     ){}
 }
