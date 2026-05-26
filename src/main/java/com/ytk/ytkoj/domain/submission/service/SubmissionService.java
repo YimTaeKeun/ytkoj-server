@@ -75,7 +75,7 @@ public class SubmissionService {
         Submission sub = submissionRepository.findBySubmissionId(taskId)
                 .orElseThrow(() -> new NoResourceException("채점 기록 찾을 수 없음"));
         sub.setStatus(status);
-        sub.setMessage(message);
+        sub.setMessage(stringCompressor.compress(message));
         submissionRepository.save(sub);
     }
 

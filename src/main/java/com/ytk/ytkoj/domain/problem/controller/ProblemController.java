@@ -2,7 +2,6 @@ package com.ytk.ytkoj.domain.problem.controller;
 
 import com.ytk.ytkoj.domain.problem.dto.GeneratedProblemDTO;
 import com.ytk.ytkoj.domain.problem.dto.ProblemMapper;
-import com.ytk.ytkoj.domain.problem.dto.RequestDTOs;
 import com.ytk.ytkoj.domain.problem.dto.ResponseDTOs;
 import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.problem.service.ProblemService;
@@ -12,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/problems")
@@ -27,9 +24,12 @@ public class ProblemController {
     @GetMapping("")
     public ResponseEntity<?> getProblems(
             @RequestParam(required = false) String problemName,
+            @RequestParam(required = false) String tags,
+            @RequestParam(required = false) String asc,
+            @RequestParam(required = false) String desc,
             @RequestParam(required = false, defaultValue = "1") Integer page
     ){
-        Page<ResponseDTOs.ProblemBriefResponse> problemBriefResponseStream = problemService.getProblem(page, problemName).map(problemMapper::toProblemBriefResponse);
+        Page<ResponseDTOs.ProblemBriefResponse> problemBriefResponseStream = problemService.getProblem(page, problemName, tags, asc, desc).map(problemMapper::toProblemBriefResponse);
         return ResponseEntity.ok(problemBriefResponseStream);
     }
 

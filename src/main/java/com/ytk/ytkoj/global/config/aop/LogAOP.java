@@ -36,7 +36,7 @@ public class LogAOP {
             throwing = "exception"
     )
     public void printAllThrowing(JoinPoint joinPoint, Exception exception) {
-        log.error("EXCEPTION METHOD: {} EX: {}", joinPoint.toString(), exception.toString());
+        log.error("EXCEPTION METHOD: {}\nEX: {}", joinPoint.toString(), exception.getStackTrace());
     }
 
 
