@@ -28,4 +28,11 @@ public class ResponseDTOs {
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ){}
+
+    // 문제 생성 서버에 보낼 레코드
+    public record ProblemResponseToGenerator(
+            Long problemNumber,
+            String title,
+            List<String> tags
+    ){}
 }

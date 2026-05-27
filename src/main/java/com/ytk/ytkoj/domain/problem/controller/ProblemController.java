@@ -4,6 +4,7 @@ import com.ytk.ytkoj.domain.problem.dto.GeneratedProblemDTO;
 import com.ytk.ytkoj.domain.problem.dto.ProblemMapper;
 import com.ytk.ytkoj.domain.problem.dto.ResponseDTOs;
 import com.ytk.ytkoj.domain.problem.entity.Problem;
+import com.ytk.ytkoj.domain.problem.entity.ProblemTag;
 import com.ytk.ytkoj.domain.problem.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -11,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/problems")
@@ -52,5 +57,26 @@ public class ProblemController {
     public ResponseEntity<?> saveGeneratedProblem(@RequestBody GeneratedProblemDTO request){
         problemService.saveGeneratedProblem(request);
         return ResponseEntity.ok().build();
+    }
+
+    @SecurityRequirements
+    @Operation(
+            description = "문제 생성기에서 function calling에 활용할 오퍼레이션 입니다."
+    )
+    @GetMapping("/all")
+    public ResponseEntity<List<ResponseDTOs.ProblemResponseToGenerator>> findByTitle(
+            @RequestParam String title
+    ){
+        List<Problem> problems = problemService.findByTitle(title);
+        List<ResponseDTOs.ProblemResponseToGenerator> response = problems.stream().map(
+                problem -> {
+                    List<String> tags = new ArrayList<>();
+                    for (ProblemTag each : problem.getProblemTags()) {
+                        tags.add(each.getTag().getTagName());
+                    }
+                    return new ResponseDTOs.ProblemResponseToGenerator(problem.getProblemNumber(), problem.getTitle(), tags);
+                }
+        ).toList();
+        return ResponseEntity.ok(response);
     }
 }

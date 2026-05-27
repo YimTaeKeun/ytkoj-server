@@ -105,4 +105,8 @@ public class ProblemService {
 
     }
 
+    public List<Problem> findByTitle(String title){
+        return problemRepository.findAllByTitleContainingIgnoreCase(title);
+    }
+
 }
