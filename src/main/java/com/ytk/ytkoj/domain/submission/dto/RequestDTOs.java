@@ -1,5 +1,6 @@
 package com.ytk.ytkoj.domain.submission.dto;
 
+import com.ytk.ytkoj.domain.submission.entity.RevealLevel;
 import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -10,7 +11,9 @@ public class RequestDTOs {
             @Schema(description = "소스코드")
             String sourceCode,
             @Schema(description = "문제 번호")
-            Long problemId
+            Long problemId,
+            @Schema(description = "코드 공개 여부")
+            RevealLevel revealLevel
     ){}
 
     public record GradingResult(

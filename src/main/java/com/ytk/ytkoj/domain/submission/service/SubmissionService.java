@@ -2,6 +2,7 @@ package com.ytk.ytkoj.domain.submission.service;
 
 import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
+import com.ytk.ytkoj.domain.submission.entity.RevealLevel;
 import com.ytk.ytkoj.domain.submission.entity.Submission;
 import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
 import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
@@ -42,7 +43,8 @@ public class SubmissionService {
     public void gradingCode(
             Long problemId, // 문제 번호
             String lang, // 작성 언어
-            String sourceCode // 작성된 코드
+            String sourceCode, // 작성된 코드
+            RevealLevel revealLevel // 코드 노출 정도
     ){
         // DB로부터 문제 정보를 가져옵니다.
         Problem problem = problemRepository.findByProblemNumber(problemId).orElseThrow(
@@ -51,7 +53,7 @@ public class SubmissionService {
         // 로그인 된 유저를 가져옵니다.
         User user = userService.authenticateUser();
         // 채점 정보 데이터를 생성합니다.
-        Submission submission = saveSubmissions(user, problem, SubmissionStatus.PENDING, sourceCode);
+        Submission submission = saveSubmissions(user, problem, SubmissionStatus.PENDING, sourceCode, lang, revealLevel);
         String submissionId = submission.getSubmissionId();
 
         // 태스크를 전송합니다.
@@ -79,9 +81,16 @@ public class SubmissionService {
         submissionRepository.save(sub);
     }
 
-    public Submission saveSubmissions(User user, Problem problem, SubmissionStatus status, String userCode){
+    public Submission saveSubmissions(User user, Problem problem, SubmissionStatus status, String userCode, String lang, RevealLevel revealLevel){
         byte[] compressedCode = stringCompressor.compress(userCode);
-        Submission submissions = new Submission(user, problem, status, compressedCode);
+        Submission submissions = new Submission(user, problem, status, compressedCode, lang);
+        if(revealLevel == null) revealLevel = RevealLevel.NO;
+        submissions.setRevealLevel(revealLevel);
         return submissionRepository.save(submissions);
+    }
+
+    public Submission getSubmissionExceptNoReveal(String submissionId){
+        return submissionRepository.findBySubmissionId(submissionId)
+                .orElseThrow(() -> new NoResourceException("채점 기록 찾을 수 없음"));
     }
 }
