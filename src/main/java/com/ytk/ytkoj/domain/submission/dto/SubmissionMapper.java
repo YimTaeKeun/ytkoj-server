@@ -24,9 +24,6 @@ public class SubmissionMapper {
         String decompressedMessage;
         try{
             decompressedMessage = stringCompressor.decompress(message);
-        } catch (InternalServerException e){
-            log.warn("기존 문자열 영향 발생");
-            decompressedMessage = null;
         }
         catch (Exception e){
             decompressedMessage = null;
@@ -35,11 +32,29 @@ public class SubmissionMapper {
         return new ResponseDTOs.SubmissionResponse(
                 submission.getSubmissionId(),
                 submission.getProblem().getProblemNumber(),
+                submission.getLang(),
                 submission.getProblem().getTitle(),
                 submission.getUser().getHandle(),
                 submission.getStatus(),
                 decompressedMessage,
                 submission.getCreatedAt().format(formatter)
+        );
+    }
+
+    public ResponseDTOs.SubmissionDetailResponse toSubmissionDetailResponse(Submission submission){
+        byte[] userCodeRaw = submission.getUserCode();
+        String userCode = stringCompressor.decompress(userCodeRaw);
+        ResponseDTOs.SubmissionResponse br = toSubmissionResponse(submission);
+        return new ResponseDTOs.SubmissionDetailResponse(
+                br.submissionId(),
+                br.problemId(),
+                br.lang(),
+                br.problemTitle(),
+                br.userHandle(),
+                br.status(),
+                br.message(),
+                userCode,
+                br.createdAt()
         );
     }
 

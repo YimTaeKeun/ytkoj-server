@@ -25,7 +25,8 @@ public class SubmissionController {
         submissionService.gradingCode(
                 request.problemId(),
                 request.lang(),
-                request.sourceCode()
+                request.sourceCode(),
+                request.revealLevel()
         );
         return ResponseEntity.ok().build();
     }
@@ -39,6 +40,16 @@ public class SubmissionController {
     ){
         Page<ResponseDTOs.SubmissionResponse> submission = submissionService.getSubmission(page, handle).map(submissionMapper::toSubmissionResponse);
         return ResponseEntity.ok(submission);
+    }
+
+    @SecurityRequirements
+    @GetMapping("/detail")
+    public ResponseEntity<?> getSubmissionDetail(
+            @RequestParam String sId
+    ){
+        Submission submissionExceptNoReveal = submissionService.getSubmissionExceptNoReveal(sId);
+        ResponseDTOs.SubmissionDetailResponse response = submissionMapper.toSubmissionDetailResponse(submissionExceptNoReveal);
+        return ResponseEntity.ok(response);
     }
 
     @SecurityRequirements
