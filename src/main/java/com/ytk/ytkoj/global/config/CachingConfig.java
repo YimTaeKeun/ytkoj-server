@@ -27,8 +27,8 @@ public class CachingConfig {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(
                 Caffeine.newBuilder()
-                        .expireAfterWrite(Duration.ofMinutes(5))
-                        .maximumSize(1000)
+                        .expireAfterWrite(Duration.ofMinutes(5)) // 기본 5분으로 설정
+                        .maximumSize(1000) // 캐시 사이즈 최대 1000으로 설정
         );
         return cacheManager;
     }
