@@ -123,7 +123,7 @@ public class TokenManager {
 
         // 추가 클레임 설정
         claims.put("handle", user.getHandle()); // 유저 고유 핸들
-        claims.put("username", user.getUsername()); // 유저 닉네임
+//        claims.put("username", user.getUsername()); // 유저 닉네임
         claims.setSubject(user.getUserUuid()); // 유저 uuid
 
         return claims;

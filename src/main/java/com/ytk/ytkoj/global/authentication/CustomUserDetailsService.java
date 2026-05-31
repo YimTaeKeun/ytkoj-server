@@ -25,7 +25,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUserUuid(userUuid).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new CustomUserDetails(
                 user.getHandle(),
-                user.getUsername(),
                 user.getUserUuid()
         );
     }

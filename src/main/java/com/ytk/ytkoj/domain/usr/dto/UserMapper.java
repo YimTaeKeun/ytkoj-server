@@ -11,7 +11,6 @@ public class UserMapper {
         return new ResponseDTOs.UserResponse(
                 hasHandle,
                 user.getHandle(),
-                user.getUsername(),
                 user.getUserUuid(),
                 user.getRegisterService()
         );
