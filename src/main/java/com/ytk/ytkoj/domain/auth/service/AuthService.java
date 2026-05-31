@@ -10,6 +10,7 @@ import com.ytk.ytkoj.global.token.TokenManager;
 import com.ytk.ytkoj.global.token.TokenType;
 import com.ytk.ytkoj.global.token.blacklist.BlackListToken;
 import com.ytk.ytkoj.global.token.blacklist.BlackListTokenRepository;
+import com.ytk.ytkoj.global.token.blacklist.BlackListTokenService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class AuthService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final TokenManager tokenManager;
-    private final BlackListTokenRepository blackListTokenRepository;
+    private final BlackListTokenService blackListTokenService;
 
 
     /**
@@ -66,8 +67,8 @@ public class AuthService {
         Claims refreshTokenClaims = tokenManager.validateToken(refreshToken, TokenType.REFRESH);
         BlackListToken ac = new BlackListToken(accessTokenClaims.getId());
         BlackListToken rf = new BlackListToken(refreshTokenClaims.getId());
-        blackListTokenRepository.save(ac);
-        blackListTokenRepository.save(rf);
+        blackListTokenService.save(ac);
+        blackListTokenService.save(rf);
     }
 
     public AuthDTOs.TokenResponse refreshToken(String refreshToken){

@@ -6,6 +6,7 @@ import com.ytk.ytkoj.global.exception.UnAuthorizedException;
 import com.ytk.ytkoj.global.jwt.JwtManager;
 import com.ytk.ytkoj.global.token.blacklist.BlackListToken;
 import com.ytk.ytkoj.global.token.blacklist.BlackListTokenRepository;
+import com.ytk.ytkoj.global.token.blacklist.BlackListTokenService;
 import com.ytk.ytkoj.global.token.refresh.RefreshToken;
 import com.ytk.ytkoj.global.token.refresh.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
@@ -30,7 +31,7 @@ public class TokenManager {
     private final JwtManager jwtManager;
     private final JwtConfig jwtConfig;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final BlackListTokenRepository blackListTokenRepository;
+    private final BlackListTokenService blackListTokenService;
 
     /**
      * 값으로 반환되는 첫 번째 필드가 액세스 토큰, 두 번째 필드가 리프레시 토큰입니다.
@@ -77,7 +78,7 @@ public class TokenManager {
     }
 
     private void checkBlackListToken(String jti){
-        BlackListToken blackListToken = blackListTokenRepository.findByJti(jti).orElse(null);
+        BlackListToken blackListToken = blackListTokenService.findByJti(jti);
         if(blackListToken != null) throw new UnAuthorizedException("INVALID");
     }
 

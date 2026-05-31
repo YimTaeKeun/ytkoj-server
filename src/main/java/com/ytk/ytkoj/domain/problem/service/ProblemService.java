@@ -14,6 +14,9 @@ import com.ytk.ytkoj.domain.problem.repository.ProblemTagRepository;
 import com.ytk.ytkoj.domain.problem.repository.TagRepository;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,7 @@ import static com.ytk.ytkoj.domain.problem.entity.QProblem.problem;
 
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "problem")
 public class ProblemService {
     private final ProblemRepository problemRepository;
     private final ProblemNumberGenerator problemNumberGenerator;
@@ -39,6 +43,7 @@ public class ProblemService {
      * 셀러리를 통해서 자동으로 생성된 문제들을 저장합니다.
      * */
     @Transactional
+    @CacheEvict(value = "problemList", allEntries = true) // 캐시에 등록된 problemList 모두 삭제
     public void saveGeneratedProblem(GeneratedProblemDTO request){
         Problem problem = getEntity(request);
         Problem savedProblem = problemRepository.save(problem);
@@ -47,6 +52,8 @@ public class ProblemService {
 
 
 
+    // TODO 문제 수정 메소드에 @CachePut 메소드 둘 것
+    @Cacheable(value = "problem", key = "#problemNumber")
     public Problem getProblem(Long problemNumber){
         return problemRepository.findByProblemNumber(problemNumber).orElseThrow(
                 () -> new NoResourceException("문제 정보가 존재하지 않습니다.")
@@ -54,6 +61,8 @@ public class ProblemService {
     }
 
     // asc=a,b desc=a,b 이렇게
+    // page를 제외한 모든 값이 null이 될 수 있으므로 spel에서 elvis operator 표현식을 사용
+    @Cacheable(value = "problemList", key = "#page + (#problemName ?: '') + (#rawProblemTags ?: '') + (#rawAsc ?: '') + (#rawDesc ?: '')")
     public Page<Problem> getProblem(int page, String problemName, String rawProblemTags, String rawAsc, String rawDesc){
         Pageable pageable = Pageable.ofSize(12).withPage(page - 1);
         String[] asc = new String[0], desc = new String[0];
