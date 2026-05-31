@@ -1,0 +1,47 @@
+package com.ytk.ytkoj.global.config.aop;
+
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
+
+@Configuration
+@Aspect
+@Slf4j
+public class LogAOP {
+
+    @Before("servicePointcut()")
+    public void serviceLogging(JoinPoint joinPoint){
+        log.info("Executed Service Class: {}", joinPoint.getSignature().getDeclaringTypeName());
+        log.info("Executed Service Method: {}, Args: {}", joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
+    }
+
+    @Around("servicePointcut()")
+    public Object serviceAround(ProceedingJoinPoint joinPoint) throws Throwable{
+        long startTime = System.currentTimeMillis();
+        // 실행 시작
+        Object proceed = joinPoint.proceed();
+        // 실행 종료
+        long endTime = System.currentTimeMillis();
+        long executeTime = endTime - startTime;
+        log.debug("Executed ({}) in {} ms", joinPoint.getSignature().getDeclaringTypeName(), executeTime);
+        return proceed;
+    }
+
+    @AfterThrowing(
+            pointcut = "servicePointcut()",
+            throwing = "exception"
+    )
+    public void printAllThrowing(JoinPoint joinPoint, Exception exception) {
+        log.error("EXCEPTION METHOD: {}\nEX: {}", joinPoint.toString(), exception.getStackTrace());
+    }
+
+
+
+    @Pointcut("execution(* com.ytk.ytkoj.domain.*.service.*.*(..))")
+    public void servicePointcut() {}
+
+}

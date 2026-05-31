@@ -17,11 +17,21 @@ repositories {
 	mavenCentral()
 }
 
+def queryDslVersion = "7.1"
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+
+	implementation "io.github.openfeign.querydsl:querydsl-core:${queryDslVersion}"
+	implementation "io.github.openfeign.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor "io.github.openfeign.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -37,4 +47,38 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// QueryDSL 생성 경로 설정
+def generated = layout.buildDirectory.dir("generated/querydsl")
+
+// JavaCompile 태스크에서 Q파일 생성 경로 지정
+tasks.named('compileJava', JavaCompile) {
+	options.generatedSourceOutputDirectory.set(generated)
+}
+//tasks.withType(JavaCompile).configureEach {
+//	options.generatedSourceOutputDirectory.set(generated)
+//}
+
+// source set에 생성 경로 추가
+sourceSets {
+	main.java.srcDir generated
+}
+
+// QueryDSL Q파일만 재생성하는 편의 태스크
+tasks.register('compileQuerydsl') {
+	group = 'querydsl'
+	description = 'Generates QueryDSL Q-classes'
+
+	doLast {
+		delete generated
+		println "Deleted QueryDSL generated files"
+	}
+
+	finalizedBy 'compileJava'
+}
+
+// clean 시 생성된 파일 삭제
+clean {
+	delete file(generated)
 }

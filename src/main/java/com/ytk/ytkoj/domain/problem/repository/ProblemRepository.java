@@ -1,0 +1,19 @@
+package com.ytk.ytkoj.domain.problem.repository;
+
+import com.ytk.ytkoj.domain.problem.entity.Problem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ProblemRepository extends JpaRepository<Problem, Long> {
+    Optional<Problem> findByProblemNumber(Long problemNumber);
+    Page<Problem> findAllByOrderByProblemNumberAsc(Pageable pageable);
+
+    Page<Problem> findAllByTitleContainingIgnoreCaseOrderByProblemNumberAsc(Pageable page, String title);
+
+    List<Problem> findAllByTitleContainingIgnoreCase(String title);
+
+}
