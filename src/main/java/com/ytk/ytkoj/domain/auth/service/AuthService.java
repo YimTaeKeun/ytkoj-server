@@ -54,7 +54,6 @@ public class AuthService {
 
     public User register(SocialUserInfoDTO socialUserInfo, String service){
         return userService.save(
-                socialUserInfo.getUsername(),
                 null,
                 service,
                 socialUserInfo.getServiceUniqueId()

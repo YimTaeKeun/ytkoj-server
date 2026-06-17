@@ -8,7 +8,6 @@ public class NaverResponseDTOs {
     public record UserInfo(
             String resultCode,
             String message,
-            String id,
-            String nickname
+            String id
     ){}
 }

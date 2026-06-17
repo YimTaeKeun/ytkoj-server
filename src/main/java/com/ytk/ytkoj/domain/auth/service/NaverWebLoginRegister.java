@@ -19,7 +19,6 @@ public class NaverWebLoginRegister implements SocialLoginRegister{
         String accessToken = naverApiHandler.requestTokenInfo(request.token()).accessToken();
         NaverResponseDTOs.UserInfo userInfo = naverApiHandler.requestUserInfo(accessToken);
         return SocialUserInfoDTO.builder()
-                .username(userInfo.nickname())
                 .serviceUniqueId(userInfo.id())
                 .build();
     }
