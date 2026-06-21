@@ -1,7 +1,7 @@
 package com.ytk.ytkoj.domain.usr.service;
 
-import com.ytk.ytkoj.domain.usr.entity.User;
-import com.ytk.ytkoj.domain.usr.repository.UserRepository;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaRepository;
 import com.ytk.ytkoj.global.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "user")
 public class UserQueryService {
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
     /**
      * 서비스에서 자체 부여한 UUID를 통해서 사용자를 검색합니다.
      * */
     @Cacheable(value = "user", key = "#UUID")
-    public User findByUserUuid(String UUID){
-        return userRepository.findByUserUuid(UUID).orElseThrow(() -> new UnAuthorizedException("Authentication Required"));
+    public UserJpaEntity findByUserUuid(String UUID){
+        return userJpaRepository.findByUserUuid(UUID).orElseThrow(() -> new UnAuthorizedException("Authentication Required"));
     }
 }

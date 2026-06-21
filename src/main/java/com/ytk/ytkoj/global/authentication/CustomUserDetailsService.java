@@ -1,8 +1,7 @@
 package com.ytk.ytkoj.global.authentication;
 
-import com.ytk.ytkoj.domain.usr.entity.User;
-import com.ytk.ytkoj.domain.usr.repository.UserRepository;
-import com.ytk.ytkoj.domain.usr.service.UserService;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,17 +14,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "userDetails")
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     /**
      * 고유 handle을 통해 유저를 특정합니다.
      * */
     @Cacheable(value = "userDetails", key = "#userUuid")
     @Override
     public UserDetails loadUserByUsername(String userUuid) throws UsernameNotFoundException {
-        User user = userRepository.findByUserUuid(userUuid).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        UserJpaEntity userJpaEntity = userJpaRepository.findByUserUuid(userUuid).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new CustomUserDetails(
-                user.getHandle(),
-                user.getUserUuid()
+                userJpaEntity.getHandle(),
+                userJpaEntity.getUserUuid()
         );
     }
 }

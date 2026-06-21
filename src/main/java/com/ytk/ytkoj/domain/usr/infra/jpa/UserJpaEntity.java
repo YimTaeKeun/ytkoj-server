@@ -1,5 +1,6 @@
-package com.ytk.ytkoj.domain.usr.entity;
+package com.ytk.ytkoj.domain.usr.infra.jpa;
 
+import com.ytk.ytkoj.domain.usr.domain.User;
 import com.ytk.ytkoj.global.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,10 +12,10 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Entity
+@Entity(name = "user")
 @NoArgsConstructor
 @Getter
-public class User extends BaseEntity {
+public class UserJpaEntity extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -33,14 +34,32 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String userUuid; // 회원을 찾기 위한 유저 아이디
 
-    public User(String handle, String userUuid, String registerService, String serviceUniqueId) {
+    public static UserJpaEntity fromPojo(User user){
+        return new UserJpaEntity(
+                user.getHandle(),
+                user.getUserUuid(),
+                user.getRegisterService(),
+                user.getServiceUqId()
+        );
+    }
+
+    public User toPojo(){
+        return User.builder()
+                .userUuid(this.userUuid)
+                .handle(this.handle)
+                .registerService(this.registerService)
+                .serviceUqId(this.serviceUniqueId)
+                .build();
+    }
+
+    public UserJpaEntity(String handle, String userUuid, String registerService, String serviceUniqueId) {
         this.userUuid = userUuid;
         this.handle = handle;
         this.registerService = registerService;
         this.serviceUniqueId = serviceUniqueId;
     }
 
-    public User(String handle, String registerService, String serviceUniqueId) {
+    public UserJpaEntity(String handle, String registerService, String serviceUniqueId) {
         this(handle, UUID.randomUUID().toString(), registerService, serviceUniqueId);
     }
 }

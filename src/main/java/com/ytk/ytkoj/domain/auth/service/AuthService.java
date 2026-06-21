@@ -2,20 +2,18 @@ package com.ytk.ytkoj.domain.auth.service;
 
 import com.ytk.ytkoj.domain.auth.dto.AuthDTOs;
 import com.ytk.ytkoj.domain.auth.dto.SocialUserInfoDTO;
-import com.ytk.ytkoj.domain.usr.entity.User;
-import com.ytk.ytkoj.domain.usr.repository.UserRepository;
-import com.ytk.ytkoj.domain.usr.service.UserService;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaRepository;
+import com.ytk.ytkoj.domain.usr.service.UserServiceDeprecated;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import com.ytk.ytkoj.global.token.TokenManager;
 import com.ytk.ytkoj.global.token.TokenType;
 import com.ytk.ytkoj.global.token.blacklist.BlackListToken;
-import com.ytk.ytkoj.global.token.blacklist.BlackListTokenRepository;
 import com.ytk.ytkoj.global.token.blacklist.BlackListTokenService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,8 +23,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthService {
     private final Map<String, SocialLoginRegister> socialService;
-    private final UserService userService;
-    private final UserRepository userRepository;
+    private final UserServiceDeprecated userServiceDeprecated;
+    private final UserJpaRepository userJpaRepository;
     private final TokenManager tokenManager;
     private final BlackListTokenService blackListTokenService;
 
@@ -40,11 +38,11 @@ public class AuthService {
         SocialUserInfoDTO socialUserInfo = socialService.getSocialUserInfo(request);
         // 사용자 정보를 바탕으로 DB 조회를 진행하여 사용자가 없으면 회원가입을 진행합니다.
         // 사용자가 있다면 DB에 있는 유저를 반환합니다.
-        User user = userService.findByServiceUniqueId(socialUserInfo.getServiceUniqueId()).orElseGet(
+        UserJpaEntity userJpaEntity = userServiceDeprecated.findByServiceUniqueId(socialUserInfo.getServiceUniqueId()).orElseGet(
                 () -> register(socialUserInfo, request.service())
         );
         // 유저 정보를 바탕으로 JWT 토큰을 반환합니다.
-        String[] tokens = tokenManager.generateTokens(user);
+        String[] tokens = tokenManager.generateTokens(userJpaEntity);
         String accessToken = tokens[0], refreshToken = tokens[1];
         return new AuthDTOs.TokenResponse(
                 accessToken,
@@ -52,8 +50,8 @@ public class AuthService {
         );
     }
 
-    public User register(SocialUserInfoDTO socialUserInfo, String service){
-        return userService.save(
+    public UserJpaEntity register(SocialUserInfoDTO socialUserInfo, String service){
+        return userServiceDeprecated.save(
                 null,
                 service,
                 socialUserInfo.getServiceUniqueId()
@@ -76,9 +74,9 @@ public class AuthService {
 
         String handle = claims.get("handle").toString();
 
-        User user = userRepository.findByHandle(handle).orElseThrow(() -> new NoResourceException("유효하지 않은 사용자"));
+        UserJpaEntity userJpaEntity = userJpaRepository.findByHandle(handle).orElseThrow(() -> new NoResourceException("유효하지 않은 사용자"));
 
-        String accessToken = tokenManager.generateAccessToken(user);
+        String accessToken = tokenManager.generateAccessToken(userJpaEntity);
         return new AuthDTOs.TokenResponse(accessToken, refreshToken);
     }
 
