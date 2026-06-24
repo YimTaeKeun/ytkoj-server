@@ -3,7 +3,7 @@ package com.ytk.ytkoj;
 import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
 import com.ytk.ytkoj.domain.problem.service.ProblemService;
-import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
+import com.ytk.ytkoj.domain.submission.infra.jpa.SubmissionJpaRepository;
 import com.ytk.ytkoj.domain.submission.service.SubmissionService;
 import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
 import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaRepository;
@@ -31,7 +31,7 @@ class YtkojApplicationTests {
 	private StringCompressor stringCompressor;
 
 	@Autowired
-	private SubmissionRepository submissionRepository;
+	private SubmissionJpaRepository submissionJpaRepository;
 
 	private static UserJpaEntity userJpaEntity;
 	private static Problem problem;

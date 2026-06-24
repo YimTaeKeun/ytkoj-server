@@ -1,6 +1,6 @@
 package com.ytk.ytkoj.domain.submission.dto;
 
-import com.ytk.ytkoj.domain.submission.entity.Submission;
+import com.ytk.ytkoj.domain.submission.infra.jpa.SubmissionJpaEntity;
 import com.ytk.ytkoj.global.util.StringCompressor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +16,9 @@ public class SubmissionMapper {
 
     private final StringCompressor stringCompressor;
 
-    public ResponseDTOs.SubmissionResponse toSubmissionResponse(Submission submission){
+    public ResponseDTOs.SubmissionResponse toSubmissionResponse(SubmissionJpaEntity submissionJpaEntity){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초");
-        byte[] message = submission.getMessage();
+        byte[] message = submissionJpaEntity.getMessage();
         String decompressedMessage;
         try{
             decompressedMessage = stringCompressor.decompress(message);
@@ -28,21 +28,21 @@ public class SubmissionMapper {
         }
 
         return new ResponseDTOs.SubmissionResponse(
-                submission.getSubmissionId(),
-                submission.getProblem().getProblemNumber(),
-                submission.getLang(),
-                submission.getProblem().getTitle(),
-                submission.getUserJpaEntity().getHandle(),
-                submission.getStatus(),
+                submissionJpaEntity.getSubmissionId(),
+                submissionJpaEntity.getProblem().getProblemNumber(),
+                submissionJpaEntity.getLang(),
+                submissionJpaEntity.getProblem().getTitle(),
+                submissionJpaEntity.getUser().getHandle(),
+                submissionJpaEntity.getStatus(),
                 decompressedMessage,
-                submission.getCreatedAt().format(formatter)
+                submissionJpaEntity.getCreatedAt().format(formatter)
         );
     }
 
-    public ResponseDTOs.SubmissionDetailResponse toSubmissionDetailResponse(Submission submission){
-        byte[] userCodeRaw = submission.getUserCode();
+    public ResponseDTOs.SubmissionDetailResponse toSubmissionDetailResponse(SubmissionJpaEntity submissionJpaEntity){
+        byte[] userCodeRaw = submissionJpaEntity.getUserCode();
         String userCode = stringCompressor.decompress(userCodeRaw);
-        ResponseDTOs.SubmissionResponse br = toSubmissionResponse(submission);
+        ResponseDTOs.SubmissionResponse br = toSubmissionResponse(submissionJpaEntity);
         return new ResponseDTOs.SubmissionDetailResponse(
                 br.submissionId(),
                 br.problemId(),
@@ -56,7 +56,7 @@ public class SubmissionMapper {
         );
     }
 
-    public List<ResponseDTOs.SubmissionResponse> toSubmissionResponseList(List<Submission> submissions){
-        return submissions.stream().map(this::toSubmissionResponse).toList();
+    public List<ResponseDTOs.SubmissionResponse> toSubmissionResponseList(List<SubmissionJpaEntity> submissionJpaEntities){
+        return submissionJpaEntities.stream().map(this::toSubmissionResponse).toList();
     }
 }

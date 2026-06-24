@@ -1,10 +1,14 @@
 package com.ytk.ytkoj.domain.submission.controller;
 
+import com.ytk.ytkoj.domain.submission.domain.Submission;
 import com.ytk.ytkoj.domain.submission.dto.RequestDTOs;
 import com.ytk.ytkoj.domain.submission.dto.ResponseDTOs;
+import com.ytk.ytkoj.domain.submission.dto.SubFindCondition;
 import com.ytk.ytkoj.domain.submission.dto.SubmissionMapper;
-import com.ytk.ytkoj.domain.submission.entity.Submission;
+import com.ytk.ytkoj.domain.submission.infra.jpa.SubmissionJpaEntity;
+import com.ytk.ytkoj.domain.submission.service.SubmissionNewService;
 import com.ytk.ytkoj.domain.submission.service.SubmissionService;
+import com.ytk.ytkoj.domain.submission.service.SubmissionServiceInterface;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
@@ -16,18 +20,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/submissions")
 @RequiredArgsConstructor
 public class SubmissionController {
-    private final SubmissionService submissionService;
-    private final SubmissionMapper submissionMapper;
+//    private final SubmissionService submissionService;
+    private final SubmissionServiceInterface submissionServiceInterface;
+//    private final SubmissionMapper submissionMapper;
 
 
     @PostMapping("")
     public ResponseEntity<?> submit(@RequestBody RequestDTOs.SubmissionRequest request){
-        submissionService.gradingCode(
-                request.problemId(),
-                request.lang(),
-                request.sourceCode(),
-                request.revealLevel()
-        );
+        submissionServiceInterface.gradingSubmission(request);
         return ResponseEntity.ok().build();
     }
 
@@ -38,7 +38,10 @@ public class SubmissionController {
             @RequestParam(required = false) String problemId,
             @RequestParam(required = false, defaultValue = "1") Integer page
     ){
-        Page<ResponseDTOs.SubmissionResponse> submission = submissionService.getSubmission(page, handle).map(submissionMapper::toSubmissionResponse);
+        SubFindCondition condition = SubFindCondition.builder()
+                .userHandle(handle)
+                .build();
+        Page<Submission> submission = submissionServiceInterface.find(page, condition);
         return ResponseEntity.ok(submission);
     }
 
@@ -47,9 +50,10 @@ public class SubmissionController {
     public ResponseEntity<?> getSubmissionDetail(
             @RequestParam String sId
     ){
-        Submission submissionExceptNoReveal = submissionService.getSubmissionExceptNoReveal(sId);
-        ResponseDTOs.SubmissionDetailResponse response = submissionMapper.toSubmissionDetailResponse(submissionExceptNoReveal);
-        return ResponseEntity.ok(response);
+        Submission result = submissionServiceInterface.findOne(sId);
+//        SubmissionJpaEntity submissionJpaEntityExceptNoReveal = submissionService.getSubmissionExceptNoReveal(sId);
+//        ResponseDTOs.SubmissionDetailResponse response = submissionMapper.toSubmissionDetailResponse(submissionJpaEntityExceptNoReveal);
+        return ResponseEntity.ok(result);
     }
 
     @SecurityRequirements
@@ -59,10 +63,6 @@ public class SubmissionController {
     )
     @PostMapping("/result")
     public void getSubmissionResult(@RequestBody RequestDTOs.GradingResult result){
-        submissionService.updateSubmissionStatus(
-                result.taskId(),
-                result.status(),
-                result.message()
-        );
+        submissionServiceInterface.updateGradingResult(result);
     }
 }

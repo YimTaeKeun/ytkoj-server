@@ -1,4 +1,4 @@
-package com.ytk.ytkoj.domain.submission.entity;
+package com.ytk.ytkoj.domain.submission.domain;
 
 /**
  * 코드 공개 레벨

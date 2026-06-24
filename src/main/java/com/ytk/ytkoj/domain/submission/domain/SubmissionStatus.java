@@ -1,4 +1,4 @@
-package com.ytk.ytkoj.domain.submission.entity;
+package com.ytk.ytkoj.domain.submission.domain;
 
 public enum SubmissionStatus {
     PENDING, // 채점 준비중

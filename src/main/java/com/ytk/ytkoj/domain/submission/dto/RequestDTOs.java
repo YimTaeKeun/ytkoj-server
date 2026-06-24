@@ -1,7 +1,7 @@
 package com.ytk.ytkoj.domain.submission.dto;
 
-import com.ytk.ytkoj.domain.submission.entity.RevealLevel;
-import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
+import com.ytk.ytkoj.domain.submission.domain.RevealLevel;
+import com.ytk.ytkoj.domain.submission.domain.SubmissionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class RequestDTOs {

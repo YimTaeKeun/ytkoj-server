@@ -1,8 +1,6 @@
 package com.ytk.ytkoj.domain.submission.dto;
 
-import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
-
-import java.time.LocalDateTime;
+import com.ytk.ytkoj.domain.submission.domain.SubmissionStatus;
 
 public class ResponseDTOs {
     public record SubmissionResponse(

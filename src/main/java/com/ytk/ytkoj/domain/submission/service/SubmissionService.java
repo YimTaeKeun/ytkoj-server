@@ -2,10 +2,10 @@ package com.ytk.ytkoj.domain.submission.service;
 
 import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
-import com.ytk.ytkoj.domain.submission.entity.RevealLevel;
-import com.ytk.ytkoj.domain.submission.entity.Submission;
-import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
-import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
+import com.ytk.ytkoj.domain.submission.domain.RevealLevel;
+import com.ytk.ytkoj.domain.submission.infra.jpa.SubmissionJpaEntity;
+import com.ytk.ytkoj.domain.submission.domain.SubmissionStatus;
+import com.ytk.ytkoj.domain.submission.infra.jpa.SubmissionJpaRepository;
 import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
 import com.ytk.ytkoj.domain.usr.service.UserServiceDeprecated;
 import com.ytk.ytkoj.global.config.aop.UserHandlerCheck;
@@ -22,17 +22,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class SubmissionService {
-    private final SubmissionRepository submissionRepository;
+    private final SubmissionJpaRepository submissionJpaRepository;
     private final CeleryTaskManager celeryTaskManager; // 셀러리 작업 전달자
     private final ProblemRepository problemRepository;
     private final UserServiceDeprecated userServiceDeprecated;
     private final StringCompressor stringCompressor;
 
 
-    public Page<Submission> getSubmission(int page, String handle){
+    public Page<SubmissionJpaEntity> getSubmission(int page, String handle){
         Pageable pageReq = PageRequest.ofSize(10).withPage(page - 1).withSort(Sort.by("createdAt").descending());
-        if(handle != null) return submissionRepository.findAllByUser_Handle(handle, pageReq);
-        return submissionRepository.findAll(pageReq);
+        if(handle != null) return submissionJpaRepository.findAllByUser_Handle(handle, pageReq);
+        return submissionJpaRepository.findAll(pageReq);
     }
 
     // 핸들러 있는 유저만 제출 가능
@@ -50,8 +50,8 @@ public class SubmissionService {
         // 로그인 된 유저를 가져옵니다.
         UserJpaEntity userJpaEntity = userServiceDeprecated.authenticateUser();
         // 채점 정보 데이터를 생성합니다.
-        Submission submission = saveSubmissions(userJpaEntity, problem, SubmissionStatus.PENDING, sourceCode, lang, revealLevel);
-        String submissionId = submission.getSubmissionId();
+        SubmissionJpaEntity submissionJpaEntity = saveSubmissions(userJpaEntity, problem, SubmissionStatus.PENDING, sourceCode, lang, revealLevel);
+        String submissionId = submissionJpaEntity.getSubmissionId();
 
         // 태스크를 전송합니다.
         celeryTaskManager.sendTask(
@@ -71,23 +71,23 @@ public class SubmissionService {
             SubmissionStatus status,
             String message
     ){
-        Submission sub = submissionRepository.findBySubmissionId(taskId)
+        SubmissionJpaEntity sub = submissionJpaRepository.findBySubmissionId(taskId)
                 .orElseThrow(() -> new NoResourceException("채점 기록 찾을 수 없음"));
         sub.setStatus(status);
         if(message != null) sub.setMessage(stringCompressor.compress(message));
-        submissionRepository.save(sub);
+        submissionJpaRepository.save(sub);
     }
 
-    public Submission saveSubmissions(UserJpaEntity userJpaEntity, Problem problem, SubmissionStatus status, String userCode, String lang, RevealLevel revealLevel){
+    public SubmissionJpaEntity saveSubmissions(UserJpaEntity userJpaEntity, Problem problem, SubmissionStatus status, String userCode, String lang, RevealLevel revealLevel){
         byte[] compressedCode = stringCompressor.compress(userCode);
-        Submission submissions = new Submission(userJpaEntity, problem, status, compressedCode, lang);
+        SubmissionJpaEntity submissions = new SubmissionJpaEntity(userJpaEntity, problem, status, compressedCode, lang, revealLevel);
         if(revealLevel == null) revealLevel = RevealLevel.NO;
         submissions.setRevealLevel(revealLevel);
-        return submissionRepository.save(submissions);
+        return submissionJpaRepository.save(submissions);
     }
 
-    public Submission getSubmissionExceptNoReveal(String submissionId){
-        return submissionRepository.findBySubmissionId(submissionId)
+    public SubmissionJpaEntity getSubmissionExceptNoReveal(String submissionId){
+        return submissionJpaRepository.findBySubmissionId(submissionId)
                 .orElseThrow(() -> new NoResourceException("채점 기록 찾을 수 없음"));
     }
 }
