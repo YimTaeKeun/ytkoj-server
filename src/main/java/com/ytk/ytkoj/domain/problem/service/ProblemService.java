@@ -62,7 +62,7 @@ public class ProblemService {
 
     // asc=a,b desc=a,b 이렇게
     // page를 제외한 모든 값이 null이 될 수 있으므로 spel에서 elvis operator 표현식을 사용
-    @Cacheable(value = "problemList", key = "#page + (#problemName ?: '') + (#rawProblemTags ?: '') + (#rawAsc ?: '') + (#rawDesc ?: '')")
+    @Cacheable(value = "problemList", key = "#page + '|' + (#problemName ?: '') + '|' + (#rawProblemTags ?: '') + '|' + (#rawAsc ?: '') + '|' + (#rawDesc ?: '')")
     public Page<Problem> getProblem(int page, String problemName, String rawProblemTags, String rawAsc, String rawDesc){
         Pageable pageable = Pageable.ofSize(12).withPage(page - 1);
         String[] asc = new String[0], desc = new String[0];
