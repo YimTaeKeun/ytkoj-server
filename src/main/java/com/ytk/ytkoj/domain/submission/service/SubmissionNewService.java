@@ -6,6 +6,7 @@ import com.ytk.ytkoj.domain.submission.domain.RevealLevel;
 import com.ytk.ytkoj.domain.submission.domain.Submission;
 import com.ytk.ytkoj.domain.submission.domain.SubmissionStatus;
 import com.ytk.ytkoj.domain.submission.dto.RequestDTOs;
+import com.ytk.ytkoj.domain.submission.dto.ResponseDTOs;
 import com.ytk.ytkoj.domain.submission.dto.SubFindCondition;
 import com.ytk.ytkoj.domain.submission.infra.SubmissionRepository;
 import com.ytk.ytkoj.domain.usr.domain.User;
@@ -31,19 +32,10 @@ public class SubmissionNewService implements SubmissionServiceInterface{
 
 
     @Override
-    public Submission findOne(String submissionId) {
-        return submissionRepository.findOne(SubFindCondition.builder().submissionId(submissionId).build());
-    }
-
-    @Override
-    public Page<Submission> findAll(int page) {
-        return find(page, null);
-    }
-
-    @Override
-    public Page<Submission> find(int page, SubFindCondition condition) {
+    public Page<ResponseDTOs.SubmissionResponse> find(int page, SubFindCondition condition) {
         Pageable pageReq = PageRequest.ofSize(10).withPage(page - 1).withSort(Sort.by("createdAt").descending());
-        return submissionRepository.findWithPage(condition, pageReq);
+        Page<Submission> withPage = submissionRepository.findWithPage(condition, pageReq);
+        return null;
     }
 
     @Override
@@ -60,7 +52,7 @@ public class SubmissionNewService implements SubmissionServiceInterface{
 
     @Override
     @UserHandlerCheck
-    public void gradingSubmission(RequestDTOs.SubmissionRequest dto) {
+    public void gradingCode(RequestDTOs.SubmissionRequest dto) {
         Long problemId = dto.problemId();
         String lang = dto.lang();
         String sourceCode = dto.sourceCode();
@@ -90,6 +82,16 @@ public class SubmissionNewService implements SubmissionServiceInterface{
                 problem.getTime(),
                 problem.getMemory()
         );
+    }
+
+    @Override
+    public ResponseDTOs.SubmissionResponse findSubDetail(String submissionId) {
+        return null;
+    }
+
+    @Override
+    public Page<ResponseDTOs.SubmissionResponse> find(int page) {
+        return null;
     }
 
     private Submission saveSubmissions(Long problemId, String lang, String sourceCode, RevealLevel revealLevel){
