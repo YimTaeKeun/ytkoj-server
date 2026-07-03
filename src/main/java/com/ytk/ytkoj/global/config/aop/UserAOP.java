@@ -1,8 +1,10 @@
 package com.ytk.ytkoj.global.config.aop;
 
 import com.ytk.ytkoj.domain.usr.entity.User;
+import com.ytk.ytkoj.domain.usr.entity.UserRole;
 import com.ytk.ytkoj.domain.usr.service.UserService;
 import com.ytk.ytkoj.global.exception.BadRequestException;
+import com.ytk.ytkoj.global.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -31,6 +33,18 @@ public class UserAOP {
         }
     }
 
+    @Before("adminOnlyAnnotation()")
+    public void adminOnly(JoinPoint joinPoint){
+        User user = userService.authenticateUser();
+        if(user.getUserRole() != UserRole.ADMIN){
+            log.warn("관리자 외 접근 시도");
+            throw new ForbiddenException("허용되지 않은 접근");
+        }
+    }
+
     @Pointcut("@annotation(com.ytk.ytkoj.global.config.aop.UserHandlerCheck)")
     public void handlerCheckAnnotation(){}
+
+    @Pointcut("@annotation(com.ytk.ytkoj.global.config.aop.AdminOnly)")
+    public void adminOnlyAnnotation(){}
 }

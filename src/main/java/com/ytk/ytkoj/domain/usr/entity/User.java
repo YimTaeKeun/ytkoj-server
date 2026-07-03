@@ -1,10 +1,7 @@
 package com.ytk.ytkoj.domain.usr.entity;
 
 import com.ytk.ytkoj.global.base.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,14 +30,18 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String userUuid; // 회원을 찾기 위한 유저 아이디
 
-    public User(String handle, String userUuid, String registerService, String serviceUniqueId) {
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole; // 유저 권한
+
+    public User(String handle, String userUuid, String registerService, String serviceUniqueId, UserRole userRole) {
         this.userUuid = userUuid;
         this.handle = handle;
         this.registerService = registerService;
         this.serviceUniqueId = serviceUniqueId;
+        this.userRole = userRole;
     }
 
-    public User(String handle, String registerService, String serviceUniqueId) {
-        this(handle, UUID.randomUUID().toString(), registerService, serviceUniqueId);
+    public User(String handle, String registerService, String serviceUniqueId, UserRole userRole) {
+        this(handle, UUID.randomUUID().toString(), registerService, serviceUniqueId, userRole);
     }
 }
