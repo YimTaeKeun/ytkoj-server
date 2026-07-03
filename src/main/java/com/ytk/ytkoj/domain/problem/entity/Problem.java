@@ -4,6 +4,7 @@ import com.ytk.ytkoj.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter
 public class Problem extends BaseEntity {
     @Id
     @GeneratedValue
