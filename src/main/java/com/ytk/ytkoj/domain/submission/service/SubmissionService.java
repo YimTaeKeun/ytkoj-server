@@ -6,10 +6,9 @@ import com.ytk.ytkoj.domain.submission.entity.RevealLevel;
 import com.ytk.ytkoj.domain.submission.entity.Submission;
 import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
 import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
-import com.ytk.ytkoj.domain.usr.entity.User;
-import com.ytk.ytkoj.domain.usr.service.UserService;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
+import com.ytk.ytkoj.domain.usr.service.UserServiceImpl;
 import com.ytk.ytkoj.global.config.aop.UserHandlerCheck;
-import com.ytk.ytkoj.global.exception.InternalServerException;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import com.ytk.ytkoj.global.util.StringCompressor;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +19,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final CeleryTaskManager celeryTaskManager; // 셀러리 작업 전달자
     private final ProblemRepository problemRepository;
-    private final UserService userService;
+    private final UserServiceImpl userService;
     private final StringCompressor stringCompressor;
 
 
@@ -51,9 +48,9 @@ public class SubmissionService {
                 () -> new NoResourceException("문제 정보가 없습니다.")
         );
         // 로그인 된 유저를 가져옵니다.
-        User user = userService.authenticateUser();
+        UserJpaEntity userJpaEntity = userService.authenticateUser();
         // 채점 정보 데이터를 생성합니다.
-        Submission submission = saveSubmissions(user, problem, SubmissionStatus.PENDING, sourceCode, lang, revealLevel);
+        Submission submission = saveSubmissions(userJpaEntity, problem, SubmissionStatus.PENDING, sourceCode, lang, revealLevel);
         String submissionId = submission.getSubmissionId();
 
         // 태스크를 전송합니다.
@@ -81,9 +78,9 @@ public class SubmissionService {
         submissionRepository.save(sub);
     }
 
-    public Submission saveSubmissions(User user, Problem problem, SubmissionStatus status, String userCode, String lang, RevealLevel revealLevel){
+    public Submission saveSubmissions(UserJpaEntity userJpaEntity, Problem problem, SubmissionStatus status, String userCode, String lang, RevealLevel revealLevel){
         byte[] compressedCode = stringCompressor.compress(userCode);
-        Submission submissions = new Submission(user, problem, status, compressedCode, lang);
+        Submission submissions = new Submission(userJpaEntity, problem, status, compressedCode, lang);
         if(revealLevel == null) revealLevel = RevealLevel.NO;
         submissions.setRevealLevel(revealLevel);
         return submissionRepository.save(submissions);

@@ -1,8 +1,9 @@
 package com.ytk.ytkoj.global.authentication;
 
-import com.ytk.ytkoj.domain.usr.entity.User;
-import com.ytk.ytkoj.domain.usr.repository.UserRepository;
-import com.ytk.ytkoj.domain.usr.service.UserService;
+import com.ytk.ytkoj.domain.usr.domain.User;
+import com.ytk.ytkoj.domain.usr.infra.UserRepository;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,10 +23,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Cacheable(value = "userDetails", key = "#userUuid")
     @Override
     public UserDetails loadUserByUsername(String userUuid) throws UsernameNotFoundException {
-        User user = userRepository.findByUserUuid(userUuid).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByUserUuid(userUuid);
         return new CustomUserDetails(
-                user.getHandle(),
-                user.getUserUuid()
+                user
         );
     }
 }

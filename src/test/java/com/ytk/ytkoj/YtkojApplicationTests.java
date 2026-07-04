@@ -3,19 +3,14 @@ package com.ytk.ytkoj;
 import com.ytk.ytkoj.domain.problem.entity.Problem;
 import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
 import com.ytk.ytkoj.domain.problem.service.ProblemService;
-import com.ytk.ytkoj.domain.submission.entity.Submission;
-import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
 import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
 import com.ytk.ytkoj.domain.submission.service.SubmissionService;
-import com.ytk.ytkoj.domain.usr.entity.User;
-import com.ytk.ytkoj.domain.usr.repository.UserRepository;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaRepository;
 import com.ytk.ytkoj.global.util.StringCompressor;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Arrays;
 
 @SpringBootTest
 class YtkojApplicationTests {
@@ -27,7 +22,7 @@ class YtkojApplicationTests {
 	private SubmissionService submissionService;
 
 	@Autowired
-	private UserRepository userRepository;
+	private UserJpaRepository userJpaRepository;
 
 	@Autowired
 	private ProblemRepository problemRepository;
@@ -38,7 +33,7 @@ class YtkojApplicationTests {
 	@Autowired
 	private SubmissionRepository submissionRepository;
 
-	private static User user;
+	private static UserJpaEntity userJpaEntity;
 	private static Problem problem;
 
 	@Test

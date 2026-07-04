@@ -1,8 +1,8 @@
 package com.ytk.ytkoj.global.config.aop;
 
-import com.ytk.ytkoj.domain.usr.entity.User;
-import com.ytk.ytkoj.domain.usr.entity.UserRole;
-import com.ytk.ytkoj.domain.usr.service.UserService;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
+import com.ytk.ytkoj.domain.usr.domain.UserRole;
+import com.ytk.ytkoj.domain.usr.service.UserServiceImpl;
 import com.ytk.ytkoj.global.exception.BadRequestException;
 import com.ytk.ytkoj.global.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +19,15 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class UserAOP {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     /**
      * 핸들러가 있는지 검사합니다.
      * */
     @Before("handlerCheckAnnotation()")
     public void handlerCheck(JoinPoint joinPoint){
-        User user = userService.authenticateUser();
-        if(user.getHandle() == null){
+        UserJpaEntity userJpaEntity = userService.authenticateUser();
+        if(userJpaEntity.getHandle() == null){
             log.warn("핸들없는 유저의 요청 발생");
             throw new BadRequestException("NO HANDLE USER");
         }
@@ -35,8 +35,8 @@ public class UserAOP {
 
     @Before("adminOnlyAnnotation()")
     public void adminOnly(JoinPoint joinPoint){
-        User user = userService.authenticateUser();
-        if(user.getUserRole() != UserRole.ADMIN){
+        UserJpaEntity userJpaEntity = userService.authenticateUser();
+        if(userJpaEntity.getUserRole() != UserRole.ADMIN){
             log.warn("관리자 외 접근 시도");
             throw new ForbiddenException("허용되지 않은 접근");
         }
