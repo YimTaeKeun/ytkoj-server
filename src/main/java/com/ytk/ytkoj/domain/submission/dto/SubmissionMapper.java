@@ -32,7 +32,7 @@ public class SubmissionMapper {
                 submission.getProblem().getProblemNumber(),
                 submission.getLang(),
                 submission.getProblem().getTitle(),
-                submission.getUserJpaEntity().getHandle(),
+                submission.getUser().getHandle(),
                 submission.getStatus(),
                 decompressedMessage,
                 submission.getCreatedAt().format(formatter)

@@ -41,7 +41,7 @@ public class AuthService {
         User user;
         try{
             user = userService.findUserBySocialUqId(socialUserInfo.getServiceUniqueId());
-        }catch (NoResourceException e){
+        }catch (Exception e){
             user = register(socialUserInfo, request.service());
         }
         // 유저 정보를 바탕으로 JWT 토큰을 반환합니다.

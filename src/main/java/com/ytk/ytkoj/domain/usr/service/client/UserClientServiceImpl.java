@@ -23,7 +23,7 @@ public class UserClientServiceImpl implements UserClientService{
     public Boolean isAvailableHandle(String targetHandle) {
         try{
             userRepository.findByHandle(targetHandle);
-        } catch (NoResourceException e){
+        } catch (Exception e){
             return true;
         }
         return false;
