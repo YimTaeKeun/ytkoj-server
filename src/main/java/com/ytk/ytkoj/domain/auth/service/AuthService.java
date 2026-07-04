@@ -2,9 +2,10 @@ package com.ytk.ytkoj.domain.auth.service;
 
 import com.ytk.ytkoj.domain.auth.dto.AuthDTOs;
 import com.ytk.ytkoj.domain.auth.dto.SocialUserInfoDTO;
-import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
+import com.ytk.ytkoj.domain.usr.domain.User;
+import com.ytk.ytkoj.domain.usr.domain.UserRole;
 import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaRepository;
-import com.ytk.ytkoj.domain.usr.service.UserServiceImpl;
+import com.ytk.ytkoj.domain.usr.service.internal.UserInternalService;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import com.ytk.ytkoj.global.token.TokenManager;
 import com.ytk.ytkoj.global.token.TokenType;
@@ -23,8 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthService {
     private final Map<String, SocialLoginRegister> socialService;
-    private final UserServiceImpl userService;
-    private final UserJpaRepository userJpaRepository;
+    private final UserInternalService userService;
     private final TokenManager tokenManager;
     private final BlackListTokenService blackListTokenService;
 
@@ -38,11 +38,14 @@ public class AuthService {
         SocialUserInfoDTO socialUserInfo = socialService.getSocialUserInfo(request);
         // 사용자 정보를 바탕으로 DB 조회를 진행하여 사용자가 없으면 회원가입을 진행합니다.
         // 사용자가 있다면 DB에 있는 유저를 반환합니다.
-        UserJpaEntity userJpaEntity = userService.findByServiceUniqueId(socialUserInfo.getServiceUniqueId()).orElseGet(
-                () -> register(socialUserInfo, request.service())
-        );
+        User user;
+        try{
+            user = userService.findUserBySocialUqId(socialUserInfo.getServiceUniqueId());
+        }catch (NoResourceException e){
+            user = register(socialUserInfo, request.service());
+        }
         // 유저 정보를 바탕으로 JWT 토큰을 반환합니다.
-        String[] tokens = tokenManager.generateTokens(userJpaEntity);
+        String[] tokens = tokenManager.generateTokens(user);
         String accessToken = tokens[0], refreshToken = tokens[1];
         return new AuthDTOs.TokenResponse(
                 accessToken,
@@ -50,11 +53,12 @@ public class AuthService {
         );
     }
 
-    public UserJpaEntity register(SocialUserInfoDTO socialUserInfo, String service){
-        return userService.save(
-                null,
+    public User register(SocialUserInfoDTO socialUserInfo, String service){
+        return userService.registerNewUser(
+                null, // 핸들은 처음 가입시 미지정
                 service,
-                socialUserInfo.getServiceUniqueId()
+                socialUserInfo.getServiceUniqueId(),
+                UserRole.CLIENT // 유저 기본 권한은 일반 고객으로 강제합니다.
         );
     }
 
@@ -72,11 +76,10 @@ public class AuthService {
         // refresh 토큰은 새로 발급하지 않고 액세스 토큰만 새로 발급합니다.
         Claims claims = tokenManager.validateToken(refreshToken, TokenType.REFRESH);
 
-        String handle = claims.get("handle").toString();
-
-        UserJpaEntity userJpaEntity = userJpaRepository.findByHandle(handle).orElseThrow(() -> new NoResourceException("유효하지 않은 사용자"));
-
-        String accessToken = tokenManager.generateAccessToken(userJpaEntity);
+        // 유저 uuid를 이용하여 유저를 가져옴
+        String uuid = claims.getSubject();
+        User user = userService.findUserByUuid(uuid);
+        String accessToken = tokenManager.generateAccessToken(user);
         return new AuthDTOs.TokenResponse(accessToken, refreshToken);
     }
 

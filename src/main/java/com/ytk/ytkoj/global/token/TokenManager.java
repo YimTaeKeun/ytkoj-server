@@ -1,5 +1,6 @@
 package com.ytk.ytkoj.global.token;
 
+import com.ytk.ytkoj.domain.usr.domain.User;
 import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
 import com.ytk.ytkoj.global.config.JwtConfig;
 import com.ytk.ytkoj.global.exception.UnAuthorizedException;
@@ -36,15 +37,15 @@ public class TokenManager {
      * 값으로 반환되는 첫 번째 필드가 액세스 토큰, 두 번째 필드가 리프레시 토큰입니다.
      * */
     @Transactional
-    public String[] generateTokens(UserJpaEntity userJpaEntity){
-        String access = generateAccessToken(userJpaEntity);
-        String refresh = generateRefreshToken(userJpaEntity);
+    public String[] generateTokens(User user){
+        String access = generateAccessToken(user);
+        String refresh = generateRefreshToken(user);
         return new String[] {access, refresh};
     }
 
-    public String generateAccessToken(UserJpaEntity userJpaEntity){
+    public String generateAccessToken(User user){
         // 액세스 토큰을 생성합니다.
-        Claims claims = getClaims(userJpaEntity, TokenType.ACCESS);
+        Claims claims = getClaims(user, TokenType.ACCESS);
         return jwtManager.generateJwt(claims);
 
     }
@@ -89,9 +90,9 @@ public class TokenManager {
 //    }
 
     @Transactional
-    public String generateRefreshToken(UserJpaEntity userJpaEntity){
+    public String generateRefreshToken(User user){
         // 리프레시 토큰 생성
-        Claims claims = getClaims(userJpaEntity, TokenType.REFRESH);
+        Claims claims = getClaims(user, TokenType.REFRESH);
         String refreshToken = jwtManager.generateJwt(claims);
 
         // 리프레시 토큰 저장
@@ -101,7 +102,7 @@ public class TokenManager {
         return refreshToken;
     }
 
-    private Claims getClaims(UserJpaEntity userJpaEntity, TokenType type){
+    private Claims getClaims(User user, TokenType type){
         Claims claims = Jwts.claims();
 
         Date now = new Date();
@@ -121,9 +122,9 @@ public class TokenManager {
 
 
         // 추가 클레임 설정
-        claims.put("handle", userJpaEntity.getHandle()); // 유저 고유 핸들
+        claims.put("handle", user.getHandle()); // 유저 고유 핸들
 //        claims.put("username", user.getUsername()); // 유저 닉네임
-        claims.setSubject(userJpaEntity.getUserUuid()); // 유저 uuid
+        claims.setSubject(user.getUserUuid()); // 유저 uuid
 
         return claims;
     }
