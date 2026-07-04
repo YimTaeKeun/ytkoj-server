@@ -32,4 +32,30 @@ public class UserTest {
                 () -> base.userRole(nullUserRole).build()
         ).isInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    public void 정상적으로_도메인이_생성됩니다(){
+        // given
+        String userUuid = "testUuid";
+        String registerService = "reg";
+        String handle = "handle";
+        String socialUQId = "Uq";
+        UserRole userRole = UserRole.CLIENT;
+
+        // when
+        User user = User.builder()
+                .userUuid(userUuid)
+                .registerService(registerService)
+                .handle(handle)
+                .socialUQId(socialUQId)
+                .userRole(userRole).build();
+
+        // then
+        assertThat(user.getUserUuid()).isEqualTo(userUuid);
+        assertThat(user.getRegisterService()).isEqualTo(registerService);
+        assertThat(user.getHandle()).isEqualTo(handle);
+        assertThat(user.getSocialUQId()).isEqualTo(socialUQId);
+        assertThat(user.getUserRole()).isEqualTo(userRole);
+
+    }
 }
