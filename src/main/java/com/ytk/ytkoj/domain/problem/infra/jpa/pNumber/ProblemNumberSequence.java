@@ -1,4 +1,4 @@
-package com.ytk.ytkoj.domain.problem.entity;
+package com.ytk.ytkoj.domain.problem.infra.jpa.pNumber;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

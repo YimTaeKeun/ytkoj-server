@@ -1,5 +1,7 @@
-package com.ytk.ytkoj.domain.problem.entity;
+package com.ytk.ytkoj.domain.problem.infra.jpa.problemTag;
 
+import com.ytk.ytkoj.domain.problem.infra.jpa.tag.Tag;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaEntity;
 import com.ytk.ytkoj.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,14 +19,14 @@ public class ProblemTag extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id")
-    private Problem problem;
+    private ProblemJpaEntity problemJpaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
-    public ProblemTag(Problem problem, Tag tag){
-        this.problem = problem;
+    public ProblemTag(ProblemJpaEntity problemJpaEntity, Tag tag){
+        this.problemJpaEntity = problemJpaEntity;
         this.tag = tag;
     }
 }

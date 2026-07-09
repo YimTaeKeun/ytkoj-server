@@ -1,17 +1,15 @@
 package com.ytk.ytkoj.domain.problem.service;
 
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.ytk.ytkoj.domain.problem.dto.GeneratedProblemDTO;
-import com.ytk.ytkoj.domain.problem.entity.Problem;
-import com.ytk.ytkoj.domain.problem.entity.ProblemStatus;
-import com.ytk.ytkoj.domain.problem.entity.ProblemTag;
-import com.ytk.ytkoj.domain.problem.entity.Tag;
-import com.ytk.ytkoj.domain.problem.repository.ProblemCustomRepository;
-import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
-import com.ytk.ytkoj.domain.problem.repository.ProblemTagRepository;
-import com.ytk.ytkoj.domain.problem.repository.TagRepository;
+import com.ytk.ytkoj.domain.problem.infra.jpa.ProblemNumberGenerator;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaEntity;
+import com.ytk.ytkoj.domain.problem.domain.ProblemStatus;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problemTag.ProblemTag;
+import com.ytk.ytkoj.domain.problem.infra.jpa.tag.Tag;
+import com.ytk.ytkoj.domain.problem.infra.ProblemCustomRepository;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaRepository;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problemTag.ProblemTagRepository;
+import com.ytk.ytkoj.domain.problem.infra.jpa.tag.TagJpaRepository;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
@@ -22,20 +20,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import static com.ytk.ytkoj.domain.problem.entity.QProblem.problem;
 
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "problem")
-public class ProblemService {
-    private final ProblemRepository problemRepository;
+public class ProblemDeprecatedService {
+    private final ProblemJpaRepository problemJpaRepository;
     private final ProblemNumberGenerator problemNumberGenerator;
-    private final TagRepository tagRepository;
+    private final TagJpaRepository tagRepository;
     private final ProblemTagRepository problemTagRepository;
     private final ProblemCustomRepository problemCustomRepository;
 
@@ -45,17 +38,17 @@ public class ProblemService {
     @Transactional
     @CacheEvict(value = "problemList", allEntries = true) // 캐시에 등록된 problemList 모두 삭제
     public void saveGeneratedProblem(GeneratedProblemDTO request){
-        Problem problem = getEntity(request);
-        Problem savedProblem = problemRepository.save(problem);
-        addProblemTag(savedProblem, request.getTags());
+        ProblemJpaEntity problemJpaEntity = getEntity(request);
+        ProblemJpaEntity savedProblemJpaEntity = problemJpaRepository.save(problemJpaEntity);
+        addProblemTag(savedProblemJpaEntity, request.getTags());
     }
 
 
 
     // TODO 문제 수정 메소드에 @CachePut 메소드 둘 것
     @Cacheable(value = "problem", key = "#problemNumber")
-    public Problem getProblem(Long problemNumber){
-        return problemRepository.findByProblemNumber(problemNumber).orElseThrow(
+    public ProblemJpaEntity getProblem(Long problemNumber){
+        return problemJpaRepository.findByProblemNumber(problemNumber).orElseThrow(
                 () -> new NoResourceException("문제 정보가 존재하지 않습니다.")
         );
     }
@@ -63,7 +56,7 @@ public class ProblemService {
     // asc=a,b desc=a,b 이렇게
     // page를 제외한 모든 값이 null이 될 수 있으므로 spel에서 elvis operator 표현식을 사용
     @Cacheable(value = "problemList", key = "#page + '|' + (#problemName ?: '') + '|' + (#rawProblemTags ?: '') + '|' + (#rawAsc ?: '') + '|' + (#rawDesc ?: '')")
-    public Page<Problem> getProblem(int page, String problemName, String rawProblemTags, String rawAsc, String rawDesc){
+    public Page<ProblemJpaEntity> getProblem(int page, String problemName, String rawProblemTags, String rawAsc, String rawDesc){
         Pageable pageable = Pageable.ofSize(12).withPage(page - 1);
         String[] asc = new String[0], desc = new String[0];
         String[] problemTags = new String[0];
@@ -75,13 +68,14 @@ public class ProblemService {
             // 앞 뒤 공백 제거 -> 먼저 공백 제거 하고 배열로 나누지 않는 이유는 태그명 자체에 띄어쓰기가 있을 수 있기 때문
             for(int i = 0; i < problemTags.length; i++) problemTags[i] = problemTags[i].strip();
         }
+        return null;
 
-        return problemCustomRepository.getProblems(pageable, problemName, problemTags, asc, desc);
+//        return problemCustomRepository.getProblems(pageable, problemName, problemTags, asc, desc);
     }
 
-    private Problem getEntity(GeneratedProblemDTO request){
+    private ProblemJpaEntity getEntity(GeneratedProblemDTO request){
         Long problemNumber = problemNumberGenerator.getNextProblemNumber();
-        return new Problem(
+        return new ProblemJpaEntity(
                 problemNumber,
                 request.getTaskId(),
                 request.getTitle(),
@@ -99,23 +93,22 @@ public class ProblemService {
         );
     }
 
-    private void addProblemTag(Problem problem, List<String> tags){
+    private void addProblemTag(ProblemJpaEntity problemJpaEntity, List<String> tags){
         for(String each: tags){
             Tag tag = tagRepository.findByTagName(each)
                     .orElseGet(() -> {
                        Tag newTag = new Tag(each);
                        return tagRepository.save(newTag);
                     });
-            ProblemTag problemTag = new ProblemTag(problem, tag);
+            ProblemTag problemTag = new ProblemTag(problemJpaEntity, tag);
             ProblemTag save = problemTagRepository.save(problemTag);
-            problem.addProblemTag(save);
-            problemRepository.save(problem);
+            problemJpaRepository.save(problemJpaEntity);
         }
 
     }
 
-    public List<Problem> findByTitle(String title){
-        return problemRepository.findAllByTitleContainingIgnoreCase(title);
+    public List<ProblemJpaEntity> findByTitle(String title){
+        return problemJpaRepository.findAllByTitleContainingIgnoreCase(title);
     }
 
 }

@@ -1,6 +1,5 @@
-package com.ytk.ytkoj.domain.problem.repository;
+package com.ytk.ytkoj.domain.problem.infra.jpa.pNumber;
 
-import com.ytk.ytkoj.domain.problem.entity.ProblemNumberSequence;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

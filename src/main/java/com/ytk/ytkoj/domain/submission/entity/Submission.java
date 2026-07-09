@@ -1,6 +1,6 @@
 package com.ytk.ytkoj.domain.submission.entity;
 
-import com.ytk.ytkoj.domain.problem.entity.Problem;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaEntity;
 import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
 import com.ytk.ytkoj.global.base.BaseEntity;
 import jakarta.persistence.*;
@@ -28,7 +28,7 @@ public class Submission extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id")
-    private Problem problem;
+    private ProblemJpaEntity problemJpaEntity;
 
     @Enumerated(EnumType.STRING)
     private SubmissionStatus status;
@@ -47,15 +47,15 @@ public class Submission extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RevealLevel revealLevel; // 코드 공개 레벨
 
-    public Submission(UserJpaEntity user, Problem problem, SubmissionStatus status, byte[] userCode, String lang){
-        this(user, problem, status, UUID.randomUUID().toString(), userCode, lang);
+    public Submission(UserJpaEntity user, ProblemJpaEntity problemJpaEntity, SubmissionStatus status, byte[] userCode, String lang){
+        this(user, problemJpaEntity, status, UUID.randomUUID().toString(), userCode, lang);
     }
 
-    public Submission(UserJpaEntity user, Problem problem, SubmissionStatus status, String submissionId, byte[] userCode, String lang){
+    public Submission(UserJpaEntity user, ProblemJpaEntity problemJpaEntity, SubmissionStatus status, String submissionId, byte[] userCode, String lang){
         this.user = user;
         this.status = status;
         this.submissionId = submissionId;
-        this.problem = problem;
+        this.problemJpaEntity = problemJpaEntity;
         this.userCode = userCode;
         this.lang = lang;
     }

@@ -1,4 +1,4 @@
-package com.ytk.ytkoj.domain.problem.entity;
+package com.ytk.ytkoj.domain.problem.infra.jpa.tag;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

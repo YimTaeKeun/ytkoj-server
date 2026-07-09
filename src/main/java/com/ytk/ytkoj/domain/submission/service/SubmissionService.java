@@ -1,13 +1,12 @@
 package com.ytk.ytkoj.domain.submission.service;
 
-import com.ytk.ytkoj.domain.problem.entity.Problem;
-import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaEntity;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaRepository;
 import com.ytk.ytkoj.domain.submission.entity.RevealLevel;
 import com.ytk.ytkoj.domain.submission.entity.Submission;
 import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
 import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
 import com.ytk.ytkoj.domain.usr.domain.User;
-import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
 import com.ytk.ytkoj.domain.usr.service.internal.UserInternalService;
 import com.ytk.ytkoj.global.config.aop.UserHandlerCheck;
 import com.ytk.ytkoj.global.exception.NoResourceException;
@@ -25,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final CeleryTaskManager celeryTaskManager; // 셀러리 작업 전달자
-    private final ProblemRepository problemRepository;
+    private final ProblemJpaRepository problemJpaRepository;
     private final UserInternalService userService;
     private final StringCompressor stringCompressor;
 
@@ -45,13 +44,13 @@ public class SubmissionService {
             RevealLevel revealLevel // 코드 노출 정도
     ){
         // DB로부터 문제 정보를 가져옵니다.
-        Problem problem = problemRepository.findByProblemNumber(problemId).orElseThrow(
+        ProblemJpaEntity problemJpaEntity = problemJpaRepository.findByProblemNumber(problemId).orElseThrow(
                 () -> new NoResourceException("문제 정보가 없습니다.")
         );
         // 로그인 된 유저를 가져옵니다.
         User user = userService.getAuthenticateUser();
         // 채점 정보 데이터를 생성합니다.
-        Submission submission = saveSubmissions(user, problem, SubmissionStatus.PENDING, sourceCode, lang, revealLevel);
+        Submission submission = saveSubmissions(user, problemJpaEntity, SubmissionStatus.PENDING, sourceCode, lang, revealLevel);
         String submissionId = submission.getSubmissionId();
 
         // 태스크를 전송합니다.
@@ -59,9 +58,9 @@ public class SubmissionService {
                 submissionId,
                 lang,
                 sourceCode,
-                problem.getGrading_data_path(),
-                problem.getTime(),
-                problem.getMemory()
+                problemJpaEntity.getGrading_data_path(),
+                problemJpaEntity.getTime(),
+                problemJpaEntity.getMemory()
         );
 
     }
@@ -79,7 +78,7 @@ public class SubmissionService {
         submissionRepository.save(sub);
     }
 
-    public Submission saveSubmissions(User user, Problem problem, SubmissionStatus status, String userCode, String lang, RevealLevel revealLevel){
+    public Submission saveSubmissions(User user, ProblemJpaEntity problemJpaEntity, SubmissionStatus status, String userCode, String lang, RevealLevel revealLevel){
 //        byte[] compressedCode = stringCompressor.compress(userCode);
 //        Submission submissions = new Submission(userJpaEntity, problem, status, compressedCode, lang);
 //        if(revealLevel == null) revealLevel = RevealLevel.NO;

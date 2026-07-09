@@ -1,9 +1,7 @@
 package com.ytk.ytkoj.domain.problem.dto;
 
-import com.ytk.ytkoj.domain.problem.entity.ProblemStatus;
+import com.ytk.ytkoj.domain.problem.domain.ProblemStatus;
 import lombok.Builder;
-
-import java.util.List;
 
 @Builder
 public record ModifyProblemDetailCommand(

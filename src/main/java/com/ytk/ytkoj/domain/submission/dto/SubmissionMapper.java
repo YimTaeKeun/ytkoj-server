@@ -29,9 +29,9 @@ public class SubmissionMapper {
 
         return new ResponseDTOs.SubmissionResponse(
                 submission.getSubmissionId(),
-                submission.getProblem().getProblemNumber(),
+                submission.getProblemJpaEntity().getProblemNumber(),
                 submission.getLang(),
-                submission.getProblem().getTitle(),
+                submission.getProblemJpaEntity().getTitle(),
                 submission.getUser().getHandle(),
                 submission.getStatus(),
                 decompressedMessage,

@@ -1,8 +1,8 @@
 package com.ytk.ytkoj;
 
-import com.ytk.ytkoj.domain.problem.entity.Problem;
-import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
-import com.ytk.ytkoj.domain.problem.service.ProblemService;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaEntity;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaRepository;
+import com.ytk.ytkoj.domain.problem.service.ProblemDeprecatedService;
 import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
 import com.ytk.ytkoj.domain.submission.service.SubmissionService;
 import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class YtkojApplicationTests {
 
 	@Autowired
-	private ProblemService problemService;
+	private ProblemDeprecatedService problemService;
 
 	@Autowired
 	private SubmissionService submissionService;
@@ -25,7 +25,7 @@ class YtkojApplicationTests {
 	private UserJpaRepository userJpaRepository;
 
 	@Autowired
-	private ProblemRepository problemRepository;
+	private ProblemJpaRepository problemJpaRepository;
 
 	@Autowired
 	private StringCompressor stringCompressor;
@@ -34,7 +34,7 @@ class YtkojApplicationTests {
 	private SubmissionRepository submissionRepository;
 
 	private static UserJpaEntity userJpaEntity;
-	private static Problem problem;
+	private static ProblemJpaEntity problemJpaEntity;
 
 	@Test
 	void contextLoads() {

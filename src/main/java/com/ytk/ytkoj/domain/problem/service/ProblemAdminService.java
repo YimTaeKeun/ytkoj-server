@@ -2,7 +2,7 @@ package com.ytk.ytkoj.domain.problem.service;
 
 import com.ytk.ytkoj.domain.problem.dto.ModifyProblemDetailCommand;
 import com.ytk.ytkoj.domain.problem.dto.ResponseDTOs;
-import com.ytk.ytkoj.domain.problem.entity.ProblemStatus;
+import com.ytk.ytkoj.domain.problem.domain.ProblemStatus;
 
 /***
  * 관리자용 문제 관리 서비스 입니다.

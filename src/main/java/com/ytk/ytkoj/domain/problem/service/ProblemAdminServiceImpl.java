@@ -1,11 +1,11 @@
 package com.ytk.ytkoj.domain.problem.service;
 
 import com.ytk.ytkoj.domain.problem.dto.ModifyProblemDetailCommand;
-import com.ytk.ytkoj.domain.problem.dto.ProblemMapper;
+import com.ytk.ytkoj.domain.problem.dto.ProblemResponseMapper;
 import com.ytk.ytkoj.domain.problem.dto.ResponseDTOs;
-import com.ytk.ytkoj.domain.problem.entity.Problem;
-import com.ytk.ytkoj.domain.problem.entity.ProblemStatus;
-import com.ytk.ytkoj.domain.problem.repository.ProblemRepository;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaEntity;
+import com.ytk.ytkoj.domain.problem.domain.ProblemStatus;
+import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaRepository;
 import com.ytk.ytkoj.global.config.aop.AdminOnly;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +20,17 @@ import java.util.function.Consumer;
 @Service
 @RequiredArgsConstructor
 public class ProblemAdminServiceImpl implements ProblemAdminService{
-    private final ProblemRepository problemRepository;
-    private final ProblemMapper mapper;
+    private final ProblemJpaRepository problemJpaRepository;
+    private final ProblemResponseMapper mapper;
 
     @Override
     @AdminOnly
     @Transactional
     public ResponseDTOs.ProblemBriefResponse updateProblemStatus(Long problemNumber, ProblemStatus status) {
-        Problem problem = findByProblemNumber(problemNumber);
-        problem.setStatus(status);
-        Problem save = problemRepository.save(problem);
-        return mapper.toProblemBriefResponse(save);
+        ProblemJpaEntity problemJpaEntity = findByProblemNumber(problemNumber);
+        problemJpaEntity.setStatus(status);
+        ProblemJpaEntity save = problemJpaRepository.save(problemJpaEntity);
+        return null;
     }
 
     @Override
@@ -43,24 +43,25 @@ public class ProblemAdminServiceImpl implements ProblemAdminService{
     @Override
     @AdminOnly
     public ResponseDTOs.ProblemDetailResponse modifyProblemDetail(Long problemNumber, ModifyProblemDetailCommand command) {
-        Problem problem = findByProblemNumber(problemNumber);
+        ProblemJpaEntity problemJpaEntity = findByProblemNumber(problemNumber);
 
-        updateIfNotNull(command.title(), problem::setTitle);
-        updateIfNotNull(command.difficulty(), problem::setDifficulty);
-        updateIfNotNull(command.content(), problem::setContent);
-        updateIfNotNull(command.inputDescription(), problem::setInput_description);
-        updateIfNotNull(command.outputDescription(), problem::setOutput_description);
-        updateIfNotNull(command.inputEx(), problem::setInput_ex);
-        updateIfNotNull(command.outputEx(), problem::setOutput_ex);
-        updateIfNotNull(command.status(), problem::setStatus);
+        updateIfNotNull(command.title(), problemJpaEntity::setTitle);
+        updateIfNotNull(command.difficulty(), problemJpaEntity::setDifficulty);
+        updateIfNotNull(command.content(), problemJpaEntity::setContent);
+        updateIfNotNull(command.inputDescription(), problemJpaEntity::setInput_description);
+        updateIfNotNull(command.outputDescription(), problemJpaEntity::setOutput_description);
+        updateIfNotNull(command.inputEx(), problemJpaEntity::setInput_ex);
+        updateIfNotNull(command.outputEx(), problemJpaEntity::setOutput_ex);
+        updateIfNotNull(command.status(), problemJpaEntity::setStatus);
 
-        Problem save = problemRepository.save(problem);
+        ProblemJpaEntity save = problemJpaRepository.save(problemJpaEntity);
 
-        return mapper.toProblemDetailResponse(save);
+//        return mapper.toProblemDetailResponse(save);
+        return null;
     }
 
-    private Problem findByProblemNumber(Long problemNumber){
-        return problemRepository.findById(problemNumber)
+    private ProblemJpaEntity findByProblemNumber(Long problemNumber){
+        return problemJpaRepository.findById(problemNumber)
                 .orElseThrow(() -> new NoResourceException("해당 문제 없음"));
     }
 

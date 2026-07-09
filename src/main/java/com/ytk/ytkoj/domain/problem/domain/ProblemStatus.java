@@ -1,4 +1,4 @@
-package com.ytk.ytkoj.domain.problem.entity;
+package com.ytk.ytkoj.domain.problem.domain;
 
 public enum ProblemStatus {
     PENDING, // 검수중

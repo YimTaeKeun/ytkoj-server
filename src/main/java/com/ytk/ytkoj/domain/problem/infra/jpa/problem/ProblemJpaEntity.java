@@ -1,19 +1,18 @@
-package com.ytk.ytkoj.domain.problem.entity;
+package com.ytk.ytkoj.domain.problem.infra.jpa.problem;
 
+import com.ytk.ytkoj.domain.problem.domain.ProblemStatus;
 import com.ytk.ytkoj.global.base.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
+@Entity(name = "problem")
 @NoArgsConstructor
 @Getter
 @Setter
-public class Problem extends BaseEntity {
+public class ProblemJpaEntity extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -57,16 +56,9 @@ public class Problem extends BaseEntity {
     @Column
     private Integer difficulty; // 문제 난이도
 
-    @OneToMany(mappedBy = "problem")
-    private List<ProblemTag> problemTags = new ArrayList<>();
 
-
-    public void addProblemTag(ProblemTag problemTag){
-        problemTags.add(problemTag);
-        problemTag.setProblem(this);
-    }
-
-    public Problem(
+    @Builder
+    public ProblemJpaEntity(
             Long problemNumber,
             String taskId,
             String title,
@@ -96,12 +88,12 @@ public class Problem extends BaseEntity {
         this.difficulty = difficulty;
     }
 
-    public Problem(String grading_data_path, String taskId){
+    public ProblemJpaEntity(String grading_data_path, String taskId){
         this.grading_data_path = grading_data_path;
         this.taskId = taskId;
     }
 
-    public Problem(String taskId){
+    public ProblemJpaEntity(String taskId){
         this.taskId = taskId;
     }
 
