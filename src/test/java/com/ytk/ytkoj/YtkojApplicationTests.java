@@ -2,7 +2,6 @@ package com.ytk.ytkoj;
 
 import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaEntity;
 import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaRepository;
-import com.ytk.ytkoj.domain.problem.service.ProblemDeprecatedService;
 import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
 import com.ytk.ytkoj.domain.submission.service.SubmissionService;
 import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
@@ -15,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class YtkojApplicationTests {
 
-	@Autowired
-	private ProblemDeprecatedService problemService;
 
 	@Autowired
 	private SubmissionService submissionService;
