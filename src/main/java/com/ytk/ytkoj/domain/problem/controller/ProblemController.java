@@ -2,8 +2,7 @@ package com.ytk.ytkoj.domain.problem.controller;
 
 import com.ytk.ytkoj.domain.problem.domain.Problem;
 import com.ytk.ytkoj.domain.problem.dto.*;
-import com.ytk.ytkoj.domain.problem.service.ProblemClientService;
-import com.ytk.ytkoj.domain.problem.service.ProblemDeprecatedService;
+import com.ytk.ytkoj.domain.problem.service.client.ProblemClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.ytk.ytkoj.domain.problem.service;
+package com.ytk.ytkoj.domain.problem.service.client;
 
 import com.ytk.ytkoj.domain.problem.domain.Problem;
 import com.ytk.ytkoj.domain.problem.dto.GeneratedProblemDTO;

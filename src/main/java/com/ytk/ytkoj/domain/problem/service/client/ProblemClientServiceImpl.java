@@ -1,4 +1,4 @@
-package com.ytk.ytkoj.domain.problem.service;
+package com.ytk.ytkoj.domain.problem.service.client;
 
 import com.ytk.ytkoj.domain.problem.domain.Problem;
 import com.ytk.ytkoj.domain.problem.domain.ProblemStatus;
@@ -7,6 +7,7 @@ import com.ytk.ytkoj.domain.problem.dto.LimitsDTO;
 import com.ytk.ytkoj.domain.problem.dto.ProblemSearchCondition;
 import com.ytk.ytkoj.domain.problem.dto.RequestDTOs;
 import com.ytk.ytkoj.domain.problem.infra.ProblemRepository;
+import com.ytk.ytkoj.domain.problem.service.ProblemNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;

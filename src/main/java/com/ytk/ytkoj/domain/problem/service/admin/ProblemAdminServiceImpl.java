@@ -1,4 +1,4 @@
-package com.ytk.ytkoj.domain.problem.service;
+package com.ytk.ytkoj.domain.problem.service.admin;
 
 import com.ytk.ytkoj.domain.problem.dto.ModifyProblemDetailCommand;
 import com.ytk.ytkoj.domain.problem.dto.ProblemResponseMapper;
