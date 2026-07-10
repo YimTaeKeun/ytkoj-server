@@ -1,12 +1,18 @@
 package com.ytk.ytkoj.domain.submission.service;
 
+import com.ytk.ytkoj.domain.problem.domain.Problem;
+import com.ytk.ytkoj.domain.problem.infra.ProblemDEMapper;
 import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaEntity;
 import com.ytk.ytkoj.domain.problem.infra.jpa.problem.ProblemJpaRepository;
+import com.ytk.ytkoj.domain.problem.service.client.ProblemClientService;
 import com.ytk.ytkoj.domain.submission.entity.RevealLevel;
 import com.ytk.ytkoj.domain.submission.entity.Submission;
 import com.ytk.ytkoj.domain.submission.entity.SubmissionStatus;
 import com.ytk.ytkoj.domain.submission.repository.SubmissionRepository;
 import com.ytk.ytkoj.domain.usr.domain.User;
+import com.ytk.ytkoj.domain.usr.infra.UserRepository;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaRepository;
 import com.ytk.ytkoj.domain.usr.service.internal.UserInternalService;
 import com.ytk.ytkoj.global.config.aop.UserHandlerCheck;
 import com.ytk.ytkoj.global.exception.NoResourceException;
@@ -27,6 +33,7 @@ public class SubmissionService {
     private final ProblemJpaRepository problemJpaRepository;
     private final UserInternalService userService;
     private final StringCompressor stringCompressor;
+    private final UserJpaRepository userJpaRepository;
 
 
     public Page<Submission> getSubmission(int page, String handle){
@@ -50,7 +57,9 @@ public class SubmissionService {
         // 로그인 된 유저를 가져옵니다.
         User user = userService.getAuthenticateUser();
         // 채점 정보 데이터를 생성합니다.
-        Submission submission = saveSubmissions(user, problemJpaEntity, SubmissionStatus.PENDING, sourceCode, lang, revealLevel);
+        UserJpaEntity entity = userJpaRepository.findByUserUuid(user.getUserUuid())
+                .orElseThrow(() -> new NoResourceException("찾을 수 없음"));
+        Submission submission = saveSubmissions(entity, problemJpaEntity, SubmissionStatus.PENDING, sourceCode, lang, revealLevel);
         String submissionId = submission.getSubmissionId();
 
         // 태스크를 전송합니다.
@@ -78,13 +87,12 @@ public class SubmissionService {
         submissionRepository.save(sub);
     }
 
-    public Submission saveSubmissions(User user, ProblemJpaEntity problemJpaEntity, SubmissionStatus status, String userCode, String lang, RevealLevel revealLevel){
-//        byte[] compressedCode = stringCompressor.compress(userCode);
-//        Submission submissions = new Submission(userJpaEntity, problem, status, compressedCode, lang);
-//        if(revealLevel == null) revealLevel = RevealLevel.NO;
-//        submissions.setRevealLevel(revealLevel);
-//        return submissionRepository.save(submissions);
-        return null;
+    public Submission saveSubmissions(UserJpaEntity user, ProblemJpaEntity problemJpaEntity, SubmissionStatus status, String userCode, String lang, RevealLevel revealLevel){
+        byte[] compressedCode = stringCompressor.compress(userCode);
+        Submission submissions = new Submission(user, problemJpaEntity, status, compressedCode, lang);
+        if(revealLevel == null) revealLevel = RevealLevel.NO;
+        submissions.setRevealLevel(revealLevel);
+        return submissionRepository.save(submissions);
     }
 
     public Submission getSubmissionExceptNoReveal(String submissionId){
