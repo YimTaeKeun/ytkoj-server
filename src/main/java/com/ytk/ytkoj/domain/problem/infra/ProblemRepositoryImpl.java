@@ -55,14 +55,32 @@ public class ProblemRepositoryImpl implements ProblemRepository{
     }
 
     @Override
+    @Transactional
     public Problem update(Problem problem) {
         // TODO 태그 정보 업데이트 반영
         Long problemNumber = problem.getProblemNumber();
         ProblemJpaEntity entity = problemJpaRepository.findByProblemNumber(problemNumber)
                 .orElseThrow(() -> new NoResourceException("문제 번호에 해당하는 객체가 없습니다."));
 
+
+        Problem.Limits limits = problem.getLimits();
+        Problem.ExampleData example = problem.getExamples().get(0);
+
+        entity.setTitle(problem.getTitle());
         entity.setContent(problem.getContent());
-        return null;
+        entity.setInput_description(problem.getInputDescription());
+        entity.setOutput_description(problem.getOutputDescription());
+        entity.setMemory(problem.getLimits().memoryLimit());
+        entity.setTime(limits.timeLimit());
+        entity.setEtcLimit(limits.etcLimit());
+        entity.setInput_ex(example.inputEx());
+        entity.setOutput_ex(example.outputEx());
+        entity.setGrading_data_path(problem.getGradingDataPath());
+        entity.setStatus(problem.getStatus());
+        entity.setDifficulty(problem.getDifficulty());
+
+
+        return problemDEMapper.toDomain(entity, problem.getTags());
     }
 
     @Override
