@@ -13,6 +13,7 @@ import com.ytk.ytkoj.global.token.blacklist.BlackListToken;
 import com.ytk.ytkoj.global.token.blacklist.BlackListTokenService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -22,6 +23,7 @@ import java.util.Map;
  * */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final Map<String, SocialLoginRegister> socialService;
     private final UserInternalService userService;
@@ -42,6 +44,7 @@ public class AuthService {
         try{
             user = userService.findUserBySocialUqId(socialUserInfo.getServiceUniqueId());
         }catch (Exception e){
+            log.warn("exception: {}", e.getMessage());
             user = register(socialUserInfo, request.service());
         }
         // 유저 정보를 바탕으로 JWT 토큰을 반환합니다.
