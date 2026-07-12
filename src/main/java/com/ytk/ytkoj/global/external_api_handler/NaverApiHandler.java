@@ -58,8 +58,7 @@ public class NaverApiHandler {
         return new NaverResponseDTOs.UserInfo(
                 data.get("resultcode").asText(),
                 data.get("message").asText(),
-                data.get("response").get("id").asText(),
-                data.get("response").get("nickname").asText()
+                data.get("response").get("id").asText()
         );
     }
 }

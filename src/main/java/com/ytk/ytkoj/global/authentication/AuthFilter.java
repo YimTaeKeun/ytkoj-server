@@ -34,6 +34,10 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("Origin: [{}] - '{}' requested.", request.getHeader("Host"), request.getRequestURI());
+        String xff = request.getHeader("X-Forwarded-For");
+        String ipAddr = (xff != null) ? xff : request.getRemoteAddr();
+        log.info("Client IP INFO: [{}]", ipAddr);
         String authorization = request.getHeader("Authorization");
         if(authorization != null){
             try{

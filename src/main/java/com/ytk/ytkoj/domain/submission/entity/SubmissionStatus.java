@@ -2,6 +2,7 @@ package com.ytk.ytkoj.domain.submission.entity;
 
 public enum SubmissionStatus {
     PENDING, // 채점 준비중
+    PROCESSING, // 채점 중
     COMPLETE, // 정답
     WRONG, // 틀림
     RUNTIME_ERROR, // 런타임 에러

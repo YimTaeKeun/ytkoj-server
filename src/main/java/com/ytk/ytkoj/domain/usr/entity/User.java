@@ -20,9 +20,6 @@ public class User extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String username;
-
-    @Column(nullable = false)
     private String registerService; // 가입된 서비스
 
     @Setter
@@ -36,15 +33,14 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String userUuid; // 회원을 찾기 위한 유저 아이디
 
-    public User(String username, String handle, String userUuid, String registerService, String serviceUniqueId) {
-        this.username = username;
+    public User(String handle, String userUuid, String registerService, String serviceUniqueId) {
         this.userUuid = userUuid;
         this.handle = handle;
         this.registerService = registerService;
         this.serviceUniqueId = serviceUniqueId;
     }
 
-    public User(String username, String handle, String registerService, String serviceUniqueId) {
-        this(username, handle, UUID.randomUUID().toString(), registerService, serviceUniqueId);
+    public User(String handle, String registerService, String serviceUniqueId) {
+        this(handle, UUID.randomUUID().toString(), registerService, serviceUniqueId);
     }
 }

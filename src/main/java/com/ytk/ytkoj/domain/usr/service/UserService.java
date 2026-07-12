@@ -7,6 +7,7 @@ import com.ytk.ytkoj.global.exception.BadRequestException;
 import com.ytk.ytkoj.global.exception.NoResourceException;
 import com.ytk.ytkoj.global.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,10 @@ import java.util.Optional;
  * */
 @Service
 @RequiredArgsConstructor // 생성자 주입 방식으로 운영
+@CacheConfig(cacheNames = "user")
 public class UserService {
     private final UserRepository userRepository;
+    private final UserQueryService userQueryService;
 
     /*
     CREATE
@@ -29,8 +32,8 @@ public class UserService {
     /**
      * 유저는 반드시 소셜로그인 혹은 추후에 개발될 자체 서비스에 의해 가입이 되게 됩니다.
      * */
-    public User save(String username, String handle, String registerService, String serviceUniqueId){
-        User user = new User(username, handle, registerService, serviceUniqueId);
+    public User save(String handle, String registerService, String serviceUniqueId){
+        User user = new User(handle, registerService, serviceUniqueId);
         return userRepository.save(user);
     }
 
@@ -44,16 +47,16 @@ public class UserService {
                 || authentication.getPrincipal() == null
                 || !(authentication.getPrincipal() instanceof CustomUserDetails)) throw new UnAuthorizedException("Authentication Required");
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return userRepository.findByUserUuid(userDetails.getUserUuid()).orElseThrow(() -> new UnAuthorizedException("Authentication Required"));
+        return userQueryService.findByUserUuid(userDetails.getUserUuid());
     }
 
 
     /**
      * 자체 서비스 로그인을 할 때 해당 함수를 사용합니다.
      * */
-    public User save(String username, String handle, String registerService){
-        return save(username, handle, registerService, null);
-    }
+//    public User save(String username, String handle, String registerService){
+//        return save(username, handle, registerService, null);
+//    }
 
 
     /*
@@ -61,12 +64,7 @@ public class UserService {
     * */
 
 
-    /**
-     * 서비스에서 자체 부여한 UUID를 통해서 사용자를 검색합니다.
-     * */
-    public User findByUserUuid(String UUID){
-        return userRepository.findByUserUuid(UUID).orElseThrow(() -> new NoResourceException("해당 사용자가 없습니다."));
-    }
+
 
     /**
      * 소셜 로그인 시 기존 사용자 정보를 DB에서 찾기 위해 서비스 유니크 아이디를 통해서 사용자를 검색합니다.

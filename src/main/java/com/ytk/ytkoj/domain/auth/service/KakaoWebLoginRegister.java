@@ -24,14 +24,10 @@ public class KakaoWebLoginRegister implements SocialLoginRegister{
         JsonNode response = kakaoApiHandler.requestTokenInfo(authCode, redirectUri);
         String accessToken = response.get("access_token").asText();
         JsonNode kakaoUserInfoResponse = kakaoApiHandler.requestUserInfo(accessToken);
-        JsonNode kakaoAccount = kakaoUserInfoResponse.get("kakao_account");
-        JsonNode profile = kakaoAccount.get("profile");
-        String nickname = profile.get("nickname").asText();
         String id = kakaoUserInfoResponse.get("id").asText();
         return SocialUserInfoDTO
                 .builder()
                 .serviceUniqueId(id)
-                .username(nickname)
                 .build();
     }
 }

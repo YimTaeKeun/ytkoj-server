@@ -12,7 +12,6 @@ import java.util.List;
 @Setter
 public class CustomUserDetails implements UserDetails {
     private String userHandle;
-    private String username;
     private String userUuid;
 
     @Override
@@ -27,12 +26,11 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.username;
+        return this.userHandle;
     }
 
-    public CustomUserDetails(String userHandle, String username, String userUuid){
+    public CustomUserDetails(String userHandle, String userUuid){
         this.userHandle = userHandle;
-        this.username = username;
         this.userUuid = userUuid;
     }
 }

@@ -48,11 +48,11 @@ public class SecurityConfig {
         String allowedOrigin;
         if(hasProfile("prod")) allowedOrigin = ALLOWED_ORIGIN_PROD;
         else allowedOrigin = ALLOWED_ORIGIN_DEV;
-        configuration.addAllowedOrigin(allowedOrigin);
-//        configuration.addAllowedOrigin("*");
+        String[] originList = getAllowedOrigins(allowedOrigin);
+        for(String each: originList) configuration.addAllowedOrigin(each);
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(false);
+        configuration.setAllowCredentials(hasProfile("prod"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -63,5 +63,10 @@ public class SecurityConfig {
         String[] activeProfiles = environment.getActiveProfiles();
         for(String each: activeProfiles) if(each.equals(profileName)) return true;
         return false;
+    }
+
+    private String[] getAllowedOrigins(String raw){
+        if(!raw.contains(",")) return new String[] {raw};
+        return raw.split(",");
     }
 }

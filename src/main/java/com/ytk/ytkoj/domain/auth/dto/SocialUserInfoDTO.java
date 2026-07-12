@@ -9,6 +9,5 @@ import lombok.Getter;
 @Builder
 @Getter
 public class SocialUserInfoDTO {
-    private String username;
     private String serviceUniqueId;
 }
