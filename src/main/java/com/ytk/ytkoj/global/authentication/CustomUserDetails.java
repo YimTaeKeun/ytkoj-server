@@ -1,7 +1,7 @@
 package com.ytk.ytkoj.global.authentication;
 
+import com.ytk.ytkoj.domain.usr.domain.User;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -9,10 +9,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
-@Setter
 public class CustomUserDetails implements UserDetails {
-    private String userHandle;
-    private String userUuid;
+    private final User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -26,11 +24,10 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.userHandle;
+        return this.user.getHandle();
     }
 
-    public CustomUserDetails(String userHandle, String userUuid){
-        this.userHandle = userHandle;
-        this.userUuid = userUuid;
+    public CustomUserDetails(User user){
+        this.user = user;
     }
 }

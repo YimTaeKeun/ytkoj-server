@@ -1,6 +1,7 @@
 package com.ytk.ytkoj.domain.usr.dto;
 
-import com.ytk.ytkoj.domain.usr.entity.User;
+import com.ytk.ytkoj.domain.usr.domain.User;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
 import org.springframework.stereotype.Component;
 
 @Component

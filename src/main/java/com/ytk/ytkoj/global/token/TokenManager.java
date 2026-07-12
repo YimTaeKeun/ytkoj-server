@@ -1,11 +1,11 @@
 package com.ytk.ytkoj.global.token;
 
-import com.ytk.ytkoj.domain.usr.entity.User;
+import com.ytk.ytkoj.domain.usr.domain.User;
+import com.ytk.ytkoj.domain.usr.infra.jpa.UserJpaEntity;
 import com.ytk.ytkoj.global.config.JwtConfig;
 import com.ytk.ytkoj.global.exception.UnAuthorizedException;
 import com.ytk.ytkoj.global.jwt.JwtManager;
 import com.ytk.ytkoj.global.token.blacklist.BlackListToken;
-import com.ytk.ytkoj.global.token.blacklist.BlackListTokenRepository;
 import com.ytk.ytkoj.global.token.blacklist.BlackListTokenService;
 import com.ytk.ytkoj.global.token.refresh.RefreshToken;
 import com.ytk.ytkoj.global.token.refresh.RefreshTokenRepository;

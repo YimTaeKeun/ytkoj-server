@@ -52,7 +52,8 @@ public class SecurityConfig {
         for(String each: originList) configuration.addAllowedOrigin(each);
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(hasProfile("prod"));
+//        configuration.setAllowCredentials(hasProfile("prod"));
+        configuration.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
