@@ -17,34 +17,42 @@ public class Problem {
     private final String taskId;
 
     // 문제 제목
-    private final String title;
+    @Setter
+    private String title;
 
     // 문제 내용
-    private final String content;
+    @Setter
+    private String content;
 
     // 입력 설명
-    private final String inputDescription;
+    @Setter
+    private String inputDescription;
 
     // 출력 설명
-    private final String outputDescription;
+    @Setter
+    private String outputDescription;
 
     // 각종 제한
-    private final Limits limits;
+    @Setter
+    private Limits limits;
 
     // 채점 데이터 경로
     private final String gradingDataPath;
 
     // 난이도
-    private final Integer difficulty;
+    @Setter
+    private Integer difficulty;
 
     // 태그 정보
     private List<String> tags;
 
     // 예시 입 출력
-    private final List<ExampleData> examples;
+    @Setter
+    private List<ExampleData> examples;
 
     // 문제 상태
-    private final ProblemStatus status;
+    @Setter
+    private ProblemStatus status;
 
     public void addTag(String tag){
         tags.add(tag);

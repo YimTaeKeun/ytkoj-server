@@ -21,7 +21,7 @@ public class ProblemController {
 
     @SecurityRequirements
     @GetMapping("")
-    public ResponseEntity<?> getProblems(
+    public ResponseEntity<Page<ResponseDTOs.ProblemBriefResponse>> getProblems(
             @RequestParam(required = false) String problemName,
             @RequestParam(required = false) String tags,
             @RequestParam(required = false) String asc,
@@ -44,7 +44,7 @@ public class ProblemController {
 
     @SecurityRequirements
     @GetMapping("/{problemId}")
-    public ResponseEntity<?> getProblemDetail(
+    public ResponseEntity<ResponseDTOs.ProblemDetailResponse> getProblemDetail(
             @PathVariable Long problemId
     ){
         Problem problem = problemService.getProblem(problemId);

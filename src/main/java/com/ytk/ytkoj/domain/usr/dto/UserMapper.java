@@ -13,6 +13,7 @@ public class UserMapper {
                 hasHandle,
                 user.getHandle(),
                 user.getUserUuid(),
+                user.getUserRole(),
                 user.getRegisterService()
         );
     }
