@@ -8,6 +8,7 @@ import com.ytk.ytkoj.domain.problem.dto.ProblemSearchCondition;
 import com.ytk.ytkoj.domain.problem.infra.jpa.problemTag.QProblemTag;
 import com.ytk.ytkoj.domain.problem.infra.jpa.tag.QTag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import static com.ytk.ytkoj.domain.problem.infra.jpa.problemTag.QProblemTag.prob
 /***
  * Problem QueryDsl Repository
  */
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class PQDSLRepoImpl implements PQDSLRepo{
@@ -68,15 +70,29 @@ public class PQDSLRepoImpl implements PQDSLRepo{
 
     private BooleanExpression[] buildConditions(ProblemSearchCondition condition) {
         return new BooleanExpression[]{
-                titleContains(condition),
+                searchTextContains(condition),
                 tagNameEq(condition, problemJpaEntity),
                 exceptDeletedProblem()
         };
     }
 
-    private BooleanExpression titleContains(ProblemSearchCondition condition){
-        String title = condition.getSearchText();
-        return (condition.hasSearchText()) ? problemJpaEntity.title.contains(title): null;
+    private BooleanExpression searchTextContains(ProblemSearchCondition condition) {
+        if (!condition.hasSearchText()) {
+            return null;
+        }
+
+        String searchText = condition.getSearchText();
+
+        BooleanExpression titleCondition = problemJpaEntity.title.containsIgnoreCase(searchText);
+
+        try {
+            Long problemNumber = Long.parseLong(searchText);
+            BooleanExpression numberCondition = problemJpaEntity.problemNumber.eq(problemNumber);
+
+            return titleCondition.or(numberCondition);
+        } catch (NumberFormatException e) {
+            return titleCondition;
+        }
     }
 
     private BooleanExpression exceptDeletedProblem(){
