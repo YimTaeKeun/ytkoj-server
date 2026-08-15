@@ -2,6 +2,8 @@ package com.ytk.ytkoj.domain.usr.infra;
 
 import com.ytk.ytkoj.domain.usr.domain.User;
 
+import java.util.List;
+
 public interface UserRepository {
 
     /***
@@ -49,4 +51,11 @@ public interface UserRepository {
      * @return User 도메인 반환
      */
     User updateUser(User user);
+
+    /***
+     * 모든 사용자를 가져옵니다.
+     * @see User
+     * @return User 리스트
+     */
+    List<User> findAllUser();
 }

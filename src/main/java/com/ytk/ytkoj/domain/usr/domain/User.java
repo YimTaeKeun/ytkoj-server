@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class User {
     // 유저 식별키 (db pk와 다름)
@@ -12,6 +14,9 @@ public class User {
 
     // 사용자 가입 서비스
     private final String registerService;
+
+    // 사용자 가입 날짜
+    private LocalDateTime registeredAt;
 
     // 유저 닉네임
     @Setter
@@ -50,12 +55,14 @@ public class User {
             String handle,
             String socialUQId,
             @NonNull
-            UserRole userRole
+            UserRole userRole,
+            LocalDateTime registeredAt
     ){
         this.userUuid = userUuid;
         this.registerService = registerService;
         this.handle = handle;
         this.socialUQId = socialUQId;
         this.userRole = userRole;
+        this.registeredAt = registeredAt;
     }
 }

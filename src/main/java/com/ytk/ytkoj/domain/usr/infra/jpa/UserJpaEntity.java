@@ -64,6 +64,7 @@ public class UserJpaEntity extends BaseEntity {
                 .handle(this.handle)
                 .socialUQId(this.serviceUniqueId)
                 .userRole(this.userRole)
+                .registeredAt(this.getCreatedAt())
                 .build();
     }
 

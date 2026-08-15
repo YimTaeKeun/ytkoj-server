@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.resource.NoResourceFoundException;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository{
@@ -55,4 +57,10 @@ public class UserRepositoryImpl implements UserRepository{
         return save.toDomain();
     }
 
+    @Override
+    public List<User> findAllUser() {
+        return userJpaRepository.findAll().stream().map(
+                UserJpaEntity::toDomain
+        ).toList();
+    }
 }
